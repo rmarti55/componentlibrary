@@ -25,14 +25,9 @@ function App() {
           onComponentSelect={handleComponentSelect}
         />
       </div>
-
-      {/* Main Content */}
+      {/* Main Content - now empty */}
       <div className="flex-1 overflow-hidden">
-        {isCategory(selectedComponent) ? (
-          <CategoryPreview category={selectedComponent} />
-        ) : (
-          <ComponentPreview component={selectedComponent} />
-        )}
+        {/* No preview or content shown */}
       </div>
     </div>
   )
