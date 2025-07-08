@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Component, ComponentCategory } from '@/types/Component'
 import { componentCategories } from '@/data/componentCategories'
-import { Search } from 'lucide-react'
+import { Search, EyeOff, Eye } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -22,7 +22,9 @@ export function ComponentSidebar({
   selectedComponent,
   onComponentSelect
 }: ComponentSidebarProps) {
-  const [searchQuery, setSearchQuery] = React.useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [hiddenComponents, setHiddenComponents] = useState<Component[]>([])
+  const [showHidden, setShowHidden] = useState(false)
 
   // Flat list of all variants, grouped by atomic section
   const atomicVariants = ATOMIC_SECTIONS.map(section => {
@@ -33,13 +35,36 @@ export function ComponentSidebar({
         const matchesSearch =
           variant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           variant.description?.toLowerCase().includes(searchQuery.toLowerCase())
-        return matchesSearch
+        // Hide if in hiddenComponents
+        const isHidden = hiddenComponents.some(h => h.id === variant.id)
+        return matchesSearch && !isHidden
       }) : []
     }
   })
 
+  // Helper to find the original section for a hidden component
+  const getSectionLabel = (component: Component) => {
+    for (const section of ATOMIC_SECTIONS) {
+      const category = componentCategories.find(cat => cat.id === section.id)
+      if (category && category.variants.some(variant => variant.id === component.id)) {
+        return section.label
+      }
+    }
+    return ''
+  }
+
+  // Hide a component
+  const handleHide = (component: Component) => {
+    setHiddenComponents(prev => [...prev, component])
+  }
+
+  // Unhide a component
+  const handleUnhide = (component: Component) => {
+    setHiddenComponents(prev => prev.filter(c => c.id !== component.id))
+  }
+
   return (
-    <div className="h-full flex flex-col bg-background border-r">
+    <div className="h-full flex flex-col bg-background border-r relative">
       {/* Header */}
       <div className="p-6 border-b">
         <h2 className="text-2xl font-bold tracking-tight">Components</h2>
@@ -59,7 +84,7 @@ export function ComponentSidebar({
       </div>
 
       {/* Flat Atomic Sections */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-32">
         {atomicVariants.map(section => (
           <div key={section.id} className="space-y-2">
             <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
@@ -72,7 +97,7 @@ export function ComponentSidebar({
                 <Card
                   key={variant.id}
                   className={cn(
-                    "cursor-pointer transition-all hover:shadow-md",
+                    "cursor-pointer transition-all hover:shadow-md flex items-center justify-between",
                     selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
                   )}
                   onClick={() => onComponentSelect({
@@ -86,8 +111,8 @@ export function ComponentSidebar({
                     updatedAt: new Date()
                   })}
                 >
-                  <CardContent className="p-2">
-                    <div className="space-y-0.5">
+                  <CardContent className="p-2 flex flex-row items-center w-full justify-between">
+                    <div>
                       <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
                       {variant.description && (
                         <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
@@ -95,12 +120,57 @@ export function ComponentSidebar({
                         </p>
                       )}
                     </div>
+                    <button
+                      className="ml-2 p-1 rounded hover:bg-muted"
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleHide(variant as Component)
+                      }}
+                      title="Hide component"
+                    >
+                      <EyeOff className="w-4 h-4 text-muted-foreground" />
+                    </button>
                   </CardContent>
                 </Card>
               ))
             )}
           </div>
         ))}
+      </div>
+
+      {/* Hidden Components Bar */}
+      <div className="absolute left-0 bottom-0 w-full border-t bg-background">
+        <button
+          className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted focus:outline-none"
+          onClick={() => setShowHidden(v => !v)}
+        >
+          <span>Hidden Components</span>
+          <span className="ml-2">{showHidden ? '▲' : '▼'}</span>
+        </button>
+        {showHidden && hiddenComponents.length > 0 && (
+          <div className="p-2 space-y-2 max-h-40 overflow-y-auto">
+            {hiddenComponents.map(component => (
+              <Card key={component.id} className="flex items-center justify-between">
+                <CardContent className="p-2 flex flex-row items-center w-full justify-between">
+                  <div>
+                    <h3 className="font-medium text-xs leading-snug truncate">{component.name}</h3>
+                    <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
+                      {component.description}
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">{getSectionLabel(component)}</span>
+                  </div>
+                  <button
+                    className="ml-2 p-1 rounded hover:bg-muted"
+                    onClick={() => handleUnhide(component)}
+                    title="Unhide component"
+                  >
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
