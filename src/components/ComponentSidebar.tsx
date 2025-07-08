@@ -121,14 +121,14 @@ export function ComponentSidebar({
                       )}
                     </div>
                     <button
-                      className="ml-2 p-1 rounded hover:bg-muted"
+                      className="ml-2 p-1 rounded group"
                       onClick={e => {
                         e.stopPropagation();
                         handleHide(variant as Component)
                       }}
                       title="Hide component"
                     >
-                      <EyeOff className="w-4 h-4 text-muted-foreground" />
+                      <Eye className="w-4 h-4 text-muted-foreground group-hover:text-black" />
                     </button>
                   </CardContent>
                 </Card>
@@ -160,11 +160,11 @@ export function ComponentSidebar({
                     <span className="text-[10px] text-muted-foreground">{getSectionLabel(component)}</span>
                   </div>
                   <button
-                    className="ml-2 p-1 rounded hover:bg-muted"
+                    className="ml-2 p-1 rounded group"
                     onClick={() => handleUnhide(component)}
                     title="Unhide component"
                   >
-                    <Eye className="w-4 h-4 text-muted-foreground" />
+                    <EyeOff className="w-4 h-4 text-muted-foreground group-hover:text-black" />
                   </button>
                 </CardContent>
               </Card>
