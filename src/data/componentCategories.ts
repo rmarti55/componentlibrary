@@ -11,6 +11,7 @@ import StarIcon from '@/components/StarIcon'
 import MetricBar from '@/components/MetricBar'
 import AvatarThumb from '@/components/AvatarThumb'
 import Logo from '@/components/Logo'
+import StarRating from '@/components/StarRating'
 
 export const componentCategories: ComponentCategory[] = [
   {
@@ -294,6 +295,20 @@ export default CommentsChip`,
 <Logo src="/public/fonts/FuturaStd-Bold.otf" alt="Brand Logo" width={40} height={12} />`,
         states: [
           { name: 'Default', props: { src: '/public/fonts/FuturaStd-Bold.otf', alt: 'Brand Logo', width: 40, height: 12 }, description: 'Default logo (replace src with real logo)' }
+        ]
+      },
+      {
+        id: 'star-rating',
+        name: 'Star Rating',
+        description: 'Five-star rating row with fractional support and date stamp',
+        component: StarRating,
+        interactive: false,
+        code: `import StarRating from './StarRating'
+
+<StarRating rating={4.5} date={new Date(Date.now() - 3 * 24 * 3600 * 1000)} /> // 4.5 stars, 3 days ago\n<StarRating rating={3.6} date={new Date(Date.now() - 5 * 30 * 24 * 3600 * 1000)} /> // 3.6 stars, 5 months ago`,
+        states: [
+          { name: '4.5 Stars, 3 days ago', props: { rating: 4.5, date: new Date(Date.now() - 3 * 24 * 3600 * 1000) }, description: '4.5 stars, 3 days ago' },
+          { name: '3.6 Stars, 5 months ago', props: { rating: 3.6, date: new Date(Date.now() - 5 * 30 * 24 * 3600 * 1000) }, description: '3.6 stars, 5 months ago' }
         ]
       }
     ],
