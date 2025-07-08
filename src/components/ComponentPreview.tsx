@@ -26,15 +26,7 @@ const componentRegistry: Record<string, React.ComponentType<any>> = {
 
 export function ComponentPreview({ component }: ComponentPreviewProps) {
   const [copied, setCopied] = useState(false)
-  const [starIconTab, setStarIconTab] = useState<{ [key: string]: 'preview' | 'code' }>({})
-
-  const handleCopyCode = async () => {
-    if (component?.code) {
-      await navigator.clipboard.writeText(component.code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
+  const [variantTab, setVariantTab] = useState<{ [key: string]: 'preview' | 'code' }>({})
 
   // Helper for StarIcon code snippets
   const starIconCode = {
@@ -60,7 +52,22 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
     )
   }
 
-  const ComponentToRender = componentRegistry[component.id]
+  // Helper to get variants array or wrap single component as a variant
+  const getVariants = (comp: any) => {
+    if (Array.isArray(comp.variants) && comp.variants.length > 0) {
+      return comp.variants
+    }
+    // If no variants, treat as a single variant
+    return [{
+      name: comp.name,
+      description: comp.description,
+      component: comp.component,
+      props: comp.props || {},
+      code: comp.code,
+    }]
+  }
+
+  const variants = getVariants(component)
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -85,7 +92,13 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
               </a>
             </Button>
           )}
-          <Button onClick={handleCopyCode} size="sm">
+          <Button onClick={async () => {
+            if (component?.code) {
+              await navigator.clipboard.writeText(component.code)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }
+          }} size="sm">
             <Copy className="w-4 h-4 mr-2" />
             {copied ? 'Copied!' : 'Copy Code'}
           </Button>
@@ -94,135 +107,61 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        <Tabs defaultValue="preview" className="h-full flex flex-col">
-          <div className="px-6 pt-4">
-            <TabsList>
-              <TabsTrigger value="preview">
-                <Eye className="w-4 h-4 mr-2" />
-                Preview
-              </TabsTrigger>
-              <TabsTrigger value="code">
-                <Code className="w-4 h-4 mr-2" />
-                Code
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="preview" className="flex-1 m-0 p-6">
-            <Card className="h-full">
-              <CardContent className="p-8 h-full flex flex-col">
-                {component.id === 'star-icon' ? (
-                  <div className="flex flex-col gap-8 w-full">
-                    <div className="text-red-600 font-bold text-center mb-4">[DEBUG] New StarIcon per-variant preview code is LIVE</div>
-                    {[
-                      {
-                        name: 'Filled',
-                        description: 'Filled star icon',
-                        preview: <StarIcon filled className="text-yellow-400 w-10 h-10" />,
-                        code: starIconCode.Filled
-                      },
-                      {
-                        name: 'Outlined',
-                        description: 'Outlined star icon',
-                        preview: <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />,
-                        code: starIconCode.Outlined
-                      },
-                      {
-                        name: 'Half-filled',
-                        description: 'Half-filled star icon (50%)',
-                        preview: (
-                          <span style={{ position: 'relative', display: 'inline-block', width: 40, height: 40 }}>
-                            <StarIcon filled className="text-yellow-400 absolute left-0 top-0 w-10 h-10" style={{ clipPath: 'inset(0 50% 0 0)' }} />
-                            <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
-                          </span>
-                        ),
-                        code: starIconCode['Half-filled']
-                      }
-                    ].map(variant => (
-                      <div key={variant.name} className="mb-8">
-                        <div className="font-semibold text-lg mb-1">{variant.name}</div>
-                        <div className="text-xs text-muted-foreground mb-3">{variant.description}</div>
-                        <div className="flex gap-4 items-center">
-                          <button
-                            className={`px-3 py-1 rounded ${starIconTab[variant.name] !== 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
-                            onClick={() => setStarIconTab(tabs => ({ ...tabs, [variant.name]: 'preview' }))}
-                          >
-                            Preview
-                          </button>
-                          <button
-                            className={`px-3 py-1 rounded ${starIconTab[variant.name] === 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
-                            onClick={() => setStarIconTab(tabs => ({ ...tabs, [variant.name]: 'code' }))}
-                          >
-                            Code
-                          </button>
-                        </div>
-                        <div className="mt-4">
-                          {starIconTab[variant.name] === 'code' ? (
-                            <pre className="bg-slate-950 text-slate-100 rounded p-4 text-sm overflow-x-auto">
-                              <code>{variant.code}</code>
-                            </pre>
-                          ) : (
-                            <div className="flex items-center justify-center">{variant.preview}</div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+        <div className="h-full flex flex-col">
+          <div className="flex flex-col gap-8 w-full">
+            {variants.map((variant: any, idx: number) => {
+              // Special StarIcon logic for code preview
+              let code = variant.code
+              if (component.id === 'star-icon') {
+                code = starIconCode[variant.name as keyof typeof starIconCode] || ''
+              }
+              // Special StarIcon logic for preview
+              let preview = null
+              if (component.id === 'star-icon') {
+                if (variant.name === 'Filled') preview = <StarIcon filled className="text-yellow-400 w-10 h-10" />
+                else if (variant.name === 'Outlined') preview = <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
+                else if (variant.name === 'Half-filled') preview = (
+                  <span style={{ position: 'relative', display: 'inline-block', width: 40, height: 40 }}>
+                    <StarIcon filled className="text-yellow-400 absolute left-0 top-0 w-10 h-10" style={{ clipPath: 'inset(0 50% 0 0)' }} />
+                    <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
+                  </span>
+                )
+              } else if (variant.component) {
+                const Comp = variant.component
+                preview = <Comp {...(variant.props || {})} />
+              }
+              return (
+                <div key={variant.name || idx} className="mb-8">
+                  <div className="font-semibold text-lg mb-1">{variant.name}</div>
+                  <div className="text-xs text-muted-foreground mb-3">{variant.description}</div>
+                  <div className="flex gap-4 items-center">
+                    <button
+                      className={`px-3 py-1 rounded ${variantTab[variant.name] !== 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
+                      onClick={() => setVariantTab(tabs => ({ ...tabs, [variant.name]: 'preview' }))}
+                    >
+                      Preview
+                    </button>
+                    <button
+                      className={`px-3 py-1 rounded ${variantTab[variant.name] === 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
+                      onClick={() => setVariantTab(tabs => ({ ...tabs, [variant.name]: 'code' }))}
+                    >
+                      Code
+                    </button>
                   </div>
-                ) : ComponentToRender ? (
-                  <div className="w-full">
-                    {component.id === 'filter-chip' ? (
-                      <div className="space-y-6">
-                        <div className="text-center mb-4">
-                          <p className="text-sm text-muted-foreground mb-4">Click to toggle states</p>
-                        </div>
-                        <div className="flex flex-wrap gap-4 justify-center">
-                          <ComponentToRender label="Ads" defaultSelected={false} />
-                          <ComponentToRender label="Comments" defaultSelected={true} />
-                          <ComponentToRender label="Instagram" defaultSelected={false} hasDropdown={true} />
-                          <ComponentToRender label="All Posts" defaultSelected={true} />
-                        </div>
-                        <div className="text-center mt-4">
-                          <p className="text-xs text-muted-foreground">
-                            Unselected: Gray border • Selected: Blue background
-                          </p>
-                        </div>
-                      </div>
-                    ) : component.id === 'multi-brand-dashboard' ? (
-                      <div className="w-full h-full overflow-auto">
-                        <ComponentToRender />
-                      </div>
+                  <div className="mt-4">
+                    {variantTab[variant.name] === 'code' ? (
+                      <pre className="bg-slate-950 text-slate-100 rounded p-4 text-sm overflow-x-auto">
+                        <code>{code}</code>
+                      </pre>
                     ) : (
-                      <div className="flex items-center justify-center">
-                        <ComponentToRender />
-                      </div>
+                      <div className="flex items-center justify-center">{preview}</div>
                     )}
                   </div>
-                ) : (
-                  <div className="text-center text-muted-foreground">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-                      <Eye className="w-8 h-8" />
-                    </div>
-                    <p className="mb-2">Component preview for {component.name}</p>
-                    <div className="text-sm text-muted-foreground">
-                      <p>Component: {component.name}</p>
-                      {component.figmaNodeId && <p>Figma Node ID: {component.figmaNodeId}</p>}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="code" className="flex-1 m-0 p-6">
-            <Card className="h-full">
-              <CardContent className="p-0 h-full">
-                <pre className="text-sm overflow-auto h-full p-6 bg-slate-950 text-slate-100 rounded-lg">
-                  <code className="language-tsx">{component.code}</code>
-                </pre>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Component Info */}
