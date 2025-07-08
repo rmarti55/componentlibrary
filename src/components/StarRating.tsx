@@ -1,9 +1,19 @@
 import React from 'react';
 import StarIcon from './StarIcon';
 
-function getRelativeDate(date: Date | string): string {
+function getRelativeDate(date: Date | string | undefined | null): string {
+  if (!date) return 'Unknown date';
+  let d: Date;
+  if (typeof date === 'string') {
+    d = new Date(date);
+    if (isNaN(d.getTime())) return 'Unknown date';
+  } else if (date instanceof Date) {
+    if (isNaN(date.getTime())) return 'Unknown date';
+    d = date;
+  } else {
+    return 'Unknown date';
+  }
   const now = new Date();
-  const d = typeof date === 'string' ? new Date(date) : date;
   const diff = (now.getTime() - d.getTime()) / 1000;
   if (diff < 60 * 60) return `${Math.floor(diff / 60)} minutes ago`;
   if (diff < 60 * 60 * 24) return `${Math.floor(diff / 3600)} hours ago`;
