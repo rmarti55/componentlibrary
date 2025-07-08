@@ -22,7 +22,6 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, date, className = '' })
   // Clamp rating between 0 and 5
   const safeRating = Math.max(0, Math.min(5, rating));
   const fullStars = Math.floor(safeRating);
-  const hasHalf = safeRating % 1 >= 0.25 && safeRating % 1 <= 0.75;
   const partial = safeRating % 1;
 
   return (
