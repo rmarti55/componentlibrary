@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Component, ComponentCategory } from '@/types/Component'
 import { componentCategories } from '@/data/componentCategories'
 import { Search, EyeOff, Eye } from 'lucide-react'
