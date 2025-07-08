@@ -1,5 +1,3 @@
-import React from 'react';
-
 const img1 = "http://localhost:3845/assets/b4745d17a1bb0512acd688160e66ee300e3dbb7e.png";
 const img2 = "http://localhost:3845/assets/68c0670050d2d28c4e248a7c85a83711a9200512.png";
 const img3 = "http://localhost:3845/assets/0a842be01f7bbb3742916777035dd207c9a52786.png";
