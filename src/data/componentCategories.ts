@@ -6,6 +6,7 @@ import MultiBrandDashboard from '@/components/MultiBrandDashboard'
 import ColorPalette from '@/components/ColorPalette'
 import Typography from '@/components/Typography'
 import FilterChipGroup from '@/components/FilterChipGroup'
+import ReviewsModule from '@/components/ReviewsModule'
 
 export const componentCategories: ComponentCategory[] = [
   {
@@ -404,9 +405,24 @@ export default SocialMediaDashboard`,
             description: 'Complete social media dashboard interface'
           }
         ]
+      },
+      {
+        id: 'reviews-module',
+        name: 'Reviews Module',
+        description: 'Detailed product review card with images, ratings, and user info',
+        component: ReviewsModule,
+        interactive: false,
+        code: `// ReviewsModule organism generated from Figma MCP\n// See src/components/ReviewsModule.tsx for implementation`,
+        states: [
+          {
+            name: 'Default',
+            props: {},
+            description: 'Default reviews module card as shown in Figma'
+          }
+        ]
       }
     ],
-    tags: ['organisms', 'dashboard', 'complex', 'social-media'],
+    tags: ['organisms', 'dashboard', 'reviews', 'cards'],
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-01-20')
   }
