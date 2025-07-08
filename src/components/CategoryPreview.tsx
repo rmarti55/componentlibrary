@@ -1,19 +1,15 @@
 import { useState } from 'react'
 import { ComponentCategory } from '@/types/Component'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Separator } from '@/components/ui/separator'
-import { Code, Eye, Copy } from 'lucide-react'
+import { Copy } from 'lucide-react'
 
 interface CategoryPreviewProps {
   category: ComponentCategory
 }
 
 export function CategoryPreview({ category }: CategoryPreviewProps) {
-  const [selectedVariant, setSelectedVariant] = useState(category.variants[0])
-  const [selectedState, setSelectedState] = useState(selectedVariant?.states?.[0])
+  const [selectedVariant] = useState(category.variants[0])
+  const [selectedState] = useState(selectedVariant?.states?.[0])
   const [copied, setCopied] = useState(false)
 
   const handleCopyCode = async () => {
