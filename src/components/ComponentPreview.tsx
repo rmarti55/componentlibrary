@@ -1,27 +1,14 @@
 import React, { useState } from 'react'
 import { Component } from '@/types/Component'
-import { Code, Eye, Copy, ExternalLink } from 'lucide-react'
+import { Copy, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import FilterChips from './FilterChips'
-import CommentsChip from './CommentsChip'
-import FilterChip from './FilterChip'
-import MultiBrandDashboard from './MultiBrandDashboard'
 import StarIcon from './StarIcon'
 
 interface ComponentPreviewProps {
   component: Component | null
-}
-
-// Component registry for rendering
-const componentRegistry: Record<string, React.ComponentType<any>> = {
-  'filter-chips': FilterChips,
-  'comments-chip': CommentsChip,
-  'filter-chip': FilterChip,
-  'multi-brand-dashboard': MultiBrandDashboard,
 }
 
 export function ComponentPreview({ component }: ComponentPreviewProps) {
@@ -43,7 +30,7 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
       <div className="flex items-center justify-center h-full bg-background">
         <div className="text-center text-muted-foreground">
           <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-            <Eye className="w-8 h-8" />
+            {/* Eye icon removed */}
           </div>
           <h3 className="text-lg font-medium mb-2">No Component Selected</h3>
           <p className="text-sm">Select a component from the sidebar to preview it here.</p>
