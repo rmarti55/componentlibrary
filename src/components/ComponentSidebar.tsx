@@ -87,18 +87,11 @@ export function ComponentSidebar({
                     updatedAt: new Date()
                   })}
                 >
-                  <CardContent className="p-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-sm leading-tight">{variant.name}</h3>
-                        {section.label && (
-                          <Badge variant="secondary" className="text-xs">
-                            {section.label}
-                          </Badge>
-                        )}
-                      </div>
+                  <CardContent className="p-2">
+                    <div className="space-y-0.5">
+                      <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
                       {variant.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2">
+                        <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
                           {variant.description}
                         </p>
                       )}
