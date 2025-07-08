@@ -7,6 +7,10 @@ import ColorPalette from '@/components/ColorPalette'
 import Typography from '@/components/Typography'
 import FilterChipGroup from '@/components/FilterChipGroup'
 import ReviewsModule from '@/components/ReviewsModule'
+import StarIcon from '@/components/StarIcon'
+import MetricBar from '@/components/MetricBar'
+import AvatarThumb from '@/components/AvatarThumb'
+import Logo from '@/components/Logo'
 
 export const componentCategories: ComponentCategory[] = [
   {
@@ -236,6 +240,60 @@ export default CommentsChip`,
             props: {},
             description: 'Blue background comments chip'
           }
+        ]
+      },
+      {
+        id: 'star-icon',
+        name: 'Star Icon',
+        description: 'SVG star icon for ratings (filled and outlined)',
+        component: StarIcon,
+        interactive: false,
+        code: `import StarIcon from './StarIcon'
+
+<StarIcon filled={true} /> // Filled
+<StarIcon filled={false} /> // Outlined`,
+        states: [
+          { name: 'Filled', props: { filled: true }, description: 'Filled star icon' },
+          { name: 'Outlined', props: { filled: false }, description: 'Outlined star icon' }
+        ]
+      },
+      {
+        id: 'metric-bar',
+        name: 'Metric Bar',
+        description: 'Colored bar for displaying metrics (e.g., quality/value)',
+        component: MetricBar,
+        interactive: false,
+        code: `import MetricBar from './MetricBar'
+
+<MetricBar value={3} max={5} color="#f0bf9b" bgColor="#d7d8e0" />`,
+        states: [
+          { name: 'Default', props: { value: 3, max: 5, color: '#f0bf9b', bgColor: '#d7d8e0' }, description: '3/5 metric bar' }
+        ]
+      },
+      {
+        id: 'avatar-thumb',
+        name: 'Avatar Thumb',
+        description: 'Image thumbnail for user avatars or review images',
+        component: AvatarThumb,
+        interactive: false,
+        code: `import AvatarThumb from './AvatarThumb'
+
+<AvatarThumb src="/public/fonts/FuturaStd-Bold.otf" alt="Sample" size={48} />`,
+        states: [
+          { name: 'Default', props: { src: '/public/fonts/FuturaStd-Bold.otf', alt: 'Sample', size: 48 }, description: 'Default avatar thumb (replace src with real image)' }
+        ]
+      },
+      {
+        id: 'logo',
+        name: 'Logo',
+        description: 'Brand logo image atom',
+        component: Logo,
+        interactive: false,
+        code: `import Logo from './Logo'
+
+<Logo src="/public/fonts/FuturaStd-Bold.otf" alt="Brand Logo" width={40} height={12} />`,
+        states: [
+          { name: 'Default', props: { src: '/public/fonts/FuturaStd-Bold.otf', alt: 'Brand Logo', width: 40, height: 12 }, description: 'Default logo (replace src with real logo)' }
         ]
       }
     ],
