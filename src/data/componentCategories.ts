@@ -316,10 +316,10 @@ export default CommentsChip`,
         interactive: false,
         code: `import StarRating from './StarRating'
 
-<StarRating rating={4.5} date={new Date(Date.now() - 3 * 24 * 3600 * 1000)} /> // 4.5 stars, 3 days ago\n<StarRating rating={3.6} date={new Date(Date.now() - 5 * 30 * 24 * 3600 * 1000)} /> // 3.6 stars, 5 months ago`,
+<StarRating rating={4.5} date={"2024-04-20T12:00:00Z"} /> // 4.5 stars, 3 days ago\n<StarRating rating={3.6} date={"2023-12-01T12:00:00Z"} /> // 3.6 stars, 5 months ago`,
         states: [
-          { name: '4.5 Stars, 3 days ago', props: { rating: 4.5, date: new Date(Date.now() - 3 * 24 * 3600 * 1000) }, description: '4.5 stars, 3 days ago' },
-          { name: '3.6 Stars, 5 months ago', props: { rating: 3.6, date: new Date(Date.now() - 5 * 30 * 24 * 3600 * 1000) }, description: '3.6 stars, 5 months ago' }
+          { name: '4.5 Stars, 3 days ago', props: { rating: 4.5, date: "2024-04-20T12:00:00Z" }, description: '4.5 stars, 3 days ago' },
+          { name: '3.6 Stars, 5 months ago', props: { rating: 3.6, date: "2023-12-01T12:00:00Z" }, description: '3.6 stars, 5 months ago' }
         ]
       },
       {
