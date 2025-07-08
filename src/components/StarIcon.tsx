@@ -3,11 +3,13 @@ import React from 'react';
 interface StarIconProps {
   filled?: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const StarIcon: React.FC<StarIconProps> = ({ filled = true, className = '' }) => (
+const StarIcon: React.FC<StarIconProps> = ({ filled = true, className = '', style }) => (
   <svg
     className={className}
+    style={style}
     width="20"
     height="20"
     viewBox="0 0 20 20"
