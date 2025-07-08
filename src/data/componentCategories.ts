@@ -246,16 +246,27 @@ export default CommentsChip`,
       {
         id: 'star-icon',
         name: 'Star Icon',
-        description: 'SVG star icon for ratings (filled and outlined)',
+        description: 'SVG star icon for ratings (filled, outlined, and partial)',
         component: StarIcon,
         interactive: false,
         code: `import StarIcon from './StarIcon'
 
-<StarIcon filled={true} /> // Filled
-<StarIcon filled={false} /> // Outlined`,
+// Filled
+<StarIcon filled />
+
+// Outlined
+<StarIcon filled={false} />
+
+// Half-filled (50%)
+<span style={{ position: 'relative', display: 'inline-block', width: 20, height: 20 }}>
+  <StarIcon filled style={{ position: 'absolute', left: 0, top: 0, width: 20, height: 20, clipPath: 'inset(0 50% 0 0)' }} />
+  <StarIcon filled={false} style={{ width: 20, height: 20 }} />
+</span>
+`,
         states: [
           { name: 'Filled', props: { filled: true }, description: 'Filled star icon' },
-          { name: 'Outlined', props: { filled: false }, description: 'Outlined star icon' }
+          { name: 'Outlined', props: { filled: false }, description: 'Outlined star icon' },
+          { name: 'Half-filled', props: { filled: false }, description: 'See code tab for half-filled example using CSS clipPath.' }
         ]
       },
       {
