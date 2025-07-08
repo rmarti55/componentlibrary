@@ -10,6 +10,7 @@ import FilterChips from './FilterChips'
 import CommentsChip from './CommentsChip'
 import FilterChip from './FilterChip'
 import MultiBrandDashboard from './MultiBrandDashboard'
+import StarIcon from './StarIcon'
 
 interface ComponentPreviewProps {
   component: Component | null
@@ -99,7 +100,38 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
           <TabsContent value="preview" className="flex-1 m-0 p-6">
             <Card className="h-full">
               <CardContent className="p-8 h-full flex items-center justify-center component-preview">
-                {ComponentToRender ? (
+                {component.id === 'star-icon' ? (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="flex flex-row items-end gap-8">
+                      {/* Filled */}
+                      <div className="flex flex-col items-center">
+                        <StarIcon filled className="text-yellow-400 w-10 h-10" />
+                        <span className="text-xs mt-2">Filled</span>
+                      </div>
+                      {/* Outlined */}
+                      <div className="flex flex-col items-center">
+                        <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
+                        <span className="text-xs mt-2">Outlined</span>
+                      </div>
+                      {/* Half-filled */}
+                      <div className="flex flex-col items-center">
+                        <span style={{ position: 'relative', display: 'inline-block', width: 40, height: 40 }}>
+                          <StarIcon filled className="text-yellow-400 absolute left-0 top-0 w-10 h-10" style={{ clipPath: 'inset(0 50% 0 0)' }} />
+                          <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
+                        </span>
+                        <span className="text-xs mt-2">Half-filled</span>
+                      </div>
+                      {/* 60%-filled */}
+                      <div className="flex flex-col items-center">
+                        <span style={{ position: 'relative', display: 'inline-block', width: 40, height: 40 }}>
+                          <StarIcon filled className="text-yellow-400 absolute left-0 top-0 w-10 h-10" style={{ clipPath: 'inset(0 40% 0 0)' }} />
+                          <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
+                        </span>
+                        <span className="text-xs mt-2">60%-filled</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : ComponentToRender ? (
                   <div className="w-full">
                     {component.id === 'filter-chip' ? (
                       <div className="space-y-6">
