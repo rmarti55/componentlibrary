@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { ComponentSidebar } from '@/components/ComponentSidebar'
+import { ComponentPreview } from '@/components/ComponentPreview'
+import { CategoryPreview } from '@/components/CategoryPreview'
 import { Component, ComponentCategory } from '@/types/Component'
 
 function App() {
@@ -7,6 +9,11 @@ function App() {
 
   const handleComponentSelect = (component: Component | ComponentCategory) => {
     setSelectedComponent(component)
+  }
+
+  // Check if selected item is a category
+  const isCategory = (item: Component | ComponentCategory | null): item is ComponentCategory => {
+    return item !== null && 'variants' in item
   }
 
   return (
@@ -18,9 +25,15 @@ function App() {
           onComponentSelect={handleComponentSelect}
         />
       </div>
-      {/* Main Content - now empty */}
+      {/* Main Content - show preview for selected item */}
       <div className="flex-1 overflow-hidden">
-        {/* No preview or content shown */}
+        {selectedComponent ? (
+          isCategory(selectedComponent) ? (
+            <CategoryPreview category={selectedComponent} />
+          ) : (
+            <ComponentPreview component={selectedComponent} />
+          )
+        ) : null}
       </div>
     </div>
   )
