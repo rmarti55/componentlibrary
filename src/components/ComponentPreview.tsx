@@ -113,6 +113,7 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
               <CardContent className="p-8 h-full flex flex-col">
                 {component.id === 'star-icon' ? (
                   <div className="flex flex-col gap-8 w-full">
+                    <div className="text-red-600 font-bold text-center mb-4">[DEBUG] New StarIcon per-variant preview code is LIVE</div>
                     {[
                       {
                         name: 'Filled',
