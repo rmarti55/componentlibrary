@@ -101,12 +101,8 @@ export function ComponentSidebar({
                     selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
                   )}
                   onClick={() => onComponentSelect({
-                    id: section.id,
-                    name: section.label,
-                    description: '',
-                    variants: [variant],
-                    layout: 'showcase',
-                    tags: [],
+                    ...variant,
+                    code: variant.code || '',
                     createdAt: new Date(),
                     updatedAt: new Date()
                   })}
