@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { ComponentSidebar } from '@/components/ComponentSidebar'
-import { ComponentPreview } from '@/components/ComponentPreview'
-import { CategoryPreview } from '@/components/CategoryPreview'
 import { Component, ComponentCategory } from '@/types/Component'
 
 function App() {
@@ -9,11 +7,6 @@ function App() {
 
   const handleComponentSelect = (component: Component | ComponentCategory) => {
     setSelectedComponent(component)
-  }
-
-  // Check if selected item is a category
-  const isCategory = (item: Component | ComponentCategory | null): item is ComponentCategory => {
-    return item !== null && 'variants' in item
   }
 
   return (
