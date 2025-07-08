@@ -4,7 +4,6 @@ import { componentCategories } from '@/data/componentCategories'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 interface ComponentSidebarProps {
