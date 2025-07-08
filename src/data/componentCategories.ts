@@ -296,7 +296,18 @@ export default CommentsChip`,
         states: [
           { name: 'Default', props: { src: '/public/fonts/FuturaStd-Bold.otf', alt: 'Brand Logo', width: 40, height: 12 }, description: 'Default logo (replace src with real logo)' }
         ]
-      },
+      }
+    ],
+    tags: ['atoms', 'chips', 'buttons', 'interactive'],
+    createdAt: new Date('2024-01-20'),
+    updatedAt: new Date('2024-01-20')
+  },
+  {
+    id: 'molecules',
+    name: 'Molecules',
+    description: 'Component combinations - groups of atoms working together',
+    layout: 'showcase',
+    variants: [
       {
         id: 'star-rating',
         name: 'Star Rating',
@@ -310,18 +321,7 @@ export default CommentsChip`,
           { name: '4.5 Stars, 3 days ago', props: { rating: 4.5, date: new Date(Date.now() - 3 * 24 * 3600 * 1000) }, description: '4.5 stars, 3 days ago' },
           { name: '3.6 Stars, 5 months ago', props: { rating: 3.6, date: new Date(Date.now() - 5 * 30 * 24 * 3600 * 1000) }, description: '3.6 stars, 5 months ago' }
         ]
-      }
-    ],
-    tags: ['atoms', 'chips', 'buttons', 'interactive'],
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-20')
-  },
-  {
-    id: 'molecules',
-    name: 'Molecules',
-    description: 'Component combinations - groups of atoms working together',
-    layout: 'showcase',
-    variants: [
+      },
       {
         id: 'filter-chip-group',
         name: 'Filter Chip Group',
