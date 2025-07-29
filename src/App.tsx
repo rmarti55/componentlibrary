@@ -24,17 +24,29 @@ function App() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Top Bar with Dropdown */}
+      {/* Top Bar with Tab Selector */}
       <div className="absolute left-0 top-0 w-full z-10 bg-background border-b flex items-center h-20 px-8">
-        <div className="relative">
-          <select
-            className="text-2xl font-bold tracking-tight bg-transparent border-none px-0 py-0 focus:outline-none cursor-pointer hover:opacity-80 transition-opacity"
-            value={view}
-            onChange={e => setView(e.target.value as 'components' | 'builds')}
+        <div className="flex space-x-8">
+          <button
+            className={`text-2xl font-bold tracking-tight transition-colors ${
+              view === 'components' 
+                ? 'text-foreground border-b-2 border-primary pb-1' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            onClick={() => setView('components')}
           >
-            <option value="components">Components</option>
-            <option value="builds">Builds</option>
-          </select>
+            Components
+          </button>
+          <button
+            className={`text-2xl font-bold tracking-tight transition-colors ${
+              view === 'builds' 
+                ? 'text-foreground border-b-2 border-primary pb-1' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            onClick={() => setView('builds')}
+          >
+            Builds
+          </button>
         </div>
       </div>
       {/* Main Content */}
