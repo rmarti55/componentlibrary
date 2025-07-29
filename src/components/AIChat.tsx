@@ -2,20 +2,24 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Send, Loader2, Eye, Code } from 'lucide-react'
+import { Send, Loader2, Eye, Code, Save } from 'lucide-react'
 import { AIChatPreview } from './AIChatPreview'
 
 export default function AIChat() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [response, setResponse] = useState('')
+  const [category, setCategory] = useState('atom')
+  const [componentName, setComponentName] = useState('')
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code')
+  const [showSave, setShowSave] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!message.trim()) return
 
     setIsLoading(true)
+    setShowSave(false)
     try {
       const response = await fetch('/api/generate-component', {
         method: 'POST',
@@ -28,11 +32,44 @@ export default function AIChat() {
         setResponse(`Error: ${data.error}`)
       } else {
         setResponse(data.componentCode)
+        setCategory(data.category || 'atom')
+        
+        // Extract component name from code
+        const nameMatch = data.componentCode.match(/const\s+(\w+)|export\s+default\s+(\w+)/)
+        const extractedName = nameMatch?.[1] || nameMatch?.[2] || 'GeneratedComponent'
+        setComponentName(extractedName)
+        setShowSave(true)
       }
     } catch (error) {
       setResponse('Error generating component. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!response || !componentName) return
+
+    try {
+      const saveResponse = await fetch('/api/save-component', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          componentCode: response,
+          componentName,
+          category
+        })
+      })
+
+      const data = await saveResponse.json()
+      if (data.success) {
+        alert('Component saved successfully! It will appear in the library after deployment.')
+        setShowSave(false)
+      } else {
+        alert('Failed to save component: ' + data.error)
+      }
+    } catch (error) {
+      alert('Error saving component. Please try again.')
     }
   }
 
@@ -77,6 +114,26 @@ export default function AIChat() {
               <Eye className="w-4 h-4 inline mr-1" />
               Preview
             </button>
+            {showSave && (
+              <div className="flex gap-2 ml-auto">
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="px-2 py-1 text-sm border rounded"
+                >
+                  <option value="atom">Atom</option>
+                  <option value="molecule">Molecule</option>
+                  <option value="organism">Organism</option>
+                </select>
+                <button
+                  onClick={handleSave}
+                  className="px-3 py-1 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700 transition-colors"
+                >
+                  <Save className="w-4 h-4 inline mr-1" />
+                  Save to Library
+                </button>
+              </div>
+            )}
           </div>
           
           {viewMode === 'code' ? (

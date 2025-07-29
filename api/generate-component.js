@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: 'system',
-          content: `You are a React component generator. Create React components with TypeScript, Tailwind CSS, and follow the existing patterns in this codebase. Return only the component code, no explanations.`
+          content: `You are a React component generator. Create React components with TypeScript, Tailwind CSS, and follow the existing patterns in this codebase. Also categorize the component as 'atom', 'molecule', or 'organism' based on complexity. Return JSON with 'code' and 'category' fields.`
         },
         {
           role: 'user',
@@ -31,8 +31,22 @@ export default async function handler(req, res) {
       max_tokens: 2048
     })
 
-    const componentCode = completion.choices[0]?.message?.content || ''
-    return res.status(200).json({ componentCode })
+    const response = completion.choices[0]?.message?.content || ''
+    
+    // Try to parse as JSON first
+    try {
+      const parsed = JSON.parse(response)
+      return res.status(200).json({ 
+        componentCode: parsed.code, 
+        category: parsed.category || 'atom' 
+      })
+    } catch {
+      // Fallback to plain text if not JSON
+      return res.status(200).json({ 
+        componentCode: response, 
+        category: 'atom' 
+      })
+    }
   } catch (error) {
     console.error('Groq API error:', error)
     return res.status(500).json({ error: 'Failed to generate component' })
