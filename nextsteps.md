@@ -13,6 +13,13 @@
 - The preview content remains fully interactive inside the "screen."
 - This approach gives stakeholders and designers a near-real experience of how components look and behave in a real mobile browser.
 
+## 3. CRITICAL: Deployment Workflow
+- **ALWAYS push changes to GitHub after making code modifications**
+- This project is Vercel-hosted only - NO localhost usage
+- Required workflow: 1) git add, 2) git commit, 3) git push origin main, 4) Vercel auto-deploys from GitHub push
+- Every code change must go through full deployment pipeline to be visible
+- Deployment URL: https://vercel.com/rmarti55s-projects/componentlibrary
+
 ---
 
 **These are planning notes only. No implementation yet.** 
