@@ -17,9 +17,10 @@ MCP Visualizer is a React application for:
 ## Features
 
 - 🎨 **Figma Integration**: Generate components from Figma via Cursor's MCP tools
+- 🤖 **AI Component Generator**: Create new components using Groq AI with chat interface
 - 📚 **Component Library**: Organize and browse generated components
 - 🔍 **Search & Filter**: Find components by name, category, or tags
-- 👁️ **Preview Mode**: View components and their code
+- 👁️ **Preview Mode**: View components and their code with live preview
 - 🟢 **Vercel Deployment**: Always up-to-date with the latest GitHub commits
 
 ## Project Structure
@@ -27,6 +28,8 @@ MCP Visualizer is a React application for:
 ```
 src/
 ├── components/          # React components
+│   ├── AIChat.tsx       # AI component generator interface
+│   ├── AIChatPreview.tsx # Component preview for AI-generated code
 │   ├── CategoryPreview.tsx
 │   ├── ColorPalette.tsx
 │   ├── CommentsChip.tsx
@@ -43,7 +46,9 @@ src/
 ├── lib/                 # Utility functions
 ├── styles/              # CSS and font styles
 ├── types/               # TypeScript types
-└── main.tsx             # App entry point
+├── main.tsx             # App entry point
+api/
+└── generate-component.js # Serverless API route for Groq AI integration
 ```
 
 ## Deployment & Workflow
@@ -55,10 +60,18 @@ src/
 
 ## Usage
 
+### Component Library
 1. **Generate components in Cursor** using MCP tools from Figma
 2. **Add components to this project** (via code, PR, or automation)
 3. **Push to GitHub** – triggers Vercel auto-deploy
 4. **Preview and organize components** at the Vercel deployment URL
+
+### AI Component Generator
+1. **Navigate to the AI tab** in the application
+2. **Type a component request** (e.g., "Create a red button component")
+3. **View generated code** in the Code tab
+4. **Preview the component** in the Preview tab
+5. **Copy the code** for use in your projects
 
 ## Contributing
 
@@ -72,9 +85,12 @@ src/
 - **React 18** + TypeScript
 - **Vite** for build tooling
 - **Tailwind CSS** for styling
+- **Groq AI** for component generation
+- **Vercel** for deployment and serverless functions
 
 ## Notes
 
-- This project is for component organization and preview only
+- This project is for component organization, preview, and AI generation
 - All previews and usage are via the Vercel deployment
-- No local development or localhost usage 
+- No local development or localhost usage
+- AI-generated components are created using Groq API with secure serverless functions 

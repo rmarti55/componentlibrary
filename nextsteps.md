@@ -20,6 +20,19 @@
 - Every code change must go through full deployment pipeline to be visible
 - Deployment URL: https://vercel.com/rmarti55s-projects/componentlibrary
 
+## 4. AI Integration - COMPLETED ✅
+- **Groq API integration** with serverless API routes for security
+- **AI Component Generator** with chat interface
+- **Component preview functionality** with Code/Preview toggle
+- **Secure API key handling** - keys stay server-side only
+- **Visual component representation** - shows generated components without executing code
+
+## 5. Development Lessons Learned
+- **Start simple** - Parse and display before trying to execute code
+- **Security first** - Use API routes instead of client-side API calls
+- **Visual feedback** - Users want to see what they asked for, not necessarily exact code execution
+- **Pattern matching** - Multiple detection methods are better than single regex patterns
+
 ---
 
 **These are planning notes only. No implementation yet.** 
