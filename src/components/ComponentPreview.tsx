@@ -118,8 +118,6 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
               }
               return (
                 <div key={variant.name || idx} className="mb-8">
-                  <div className="font-semibold text-lg mb-1">{variant.name}</div>
-                  <div className="text-xs text-muted-foreground mb-3">{variant.description}</div>
                   <div className="flex gap-4 items-center">
                     <button
                       className={`px-3 py-1 rounded ${variantTab[variant.name] !== 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
