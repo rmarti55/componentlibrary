@@ -23,6 +23,9 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
       // Extract component type (button, div, etc.)
       const typeMatch = code.match(/<(\w+)/)
       const componentType = typeMatch?.[1] || 'div'
+      
+      // Check if it's a button component by looking for button-related patterns
+      const isButton = code.includes('<button') || code.includes('button') || componentName.toLowerCase().includes('button')
 
       // Extract props
       const propsMatch = code.match(/interface\s+\w+Props\s*{([^}]*)}/)
@@ -39,7 +42,7 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
 
       setComponentInfo({
         name: componentName,
-        type: componentType,
+        type: isButton ? 'button' : componentType,
         props: props,
         children: hasChildren ? 'Dynamic content' : 'No children'
       })
@@ -63,7 +66,7 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
 
       {/* Visual representation */}
       <div className="flex justify-center">
-        <div className={`${componentInfo.type === 'button' ? 'bg-red-500 text-white px-4 py-2 rounded' : 'border p-4'} text-center`}>
+        <div className={`${componentInfo.type === 'button' ? 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors' : 'border p-4'} text-center`}>
           {componentInfo.children}
         </div>
       </div>
