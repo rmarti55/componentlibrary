@@ -28,7 +28,7 @@ function App() {
       <div className="absolute left-0 top-0 w-full z-10 bg-background border-b flex items-center h-20 px-8">
         <div className="relative">
           <select
-            className="text-2xl font-bold tracking-tight bg-background border rounded px-4 py-2 focus:outline-none"
+            className="text-2xl font-bold tracking-tight bg-transparent border-none px-0 py-0 focus:outline-none cursor-pointer hover:opacity-80 transition-opacity"
             value={view}
             onChange={e => setView(e.target.value as 'components' | 'builds')}
           >
