@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { generateComponent } from '@/lib/groq'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, Loader2 } from 'lucide-react'
@@ -15,8 +15,18 @@ export default function AIChat() {
 
     setIsLoading(true)
     try {
-      const result = await generateComponent(message)
-      setResponse(result)
+      const response = await fetch('/api/generate-component', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: message })
+      })
+      
+      const data = await response.json()
+      if (data.error) {
+        setResponse(`Error: ${data.error}`)
+      } else {
+        setResponse(data.componentCode)
+      }
     } catch (error) {
       setResponse('Error generating component. Please try again.')
     } finally {
