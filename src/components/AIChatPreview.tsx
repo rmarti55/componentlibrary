@@ -43,7 +43,7 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
                 } else if (key === 'onClick') {
                   element.onclick = props[key]
                 } else if (key.startsWith('on')) {
-                  element[key.toLowerCase()] = props[key]
+                  ;(element as any)[key.toLowerCase()] = props[key]
                 } else {
                   element.setAttribute(key, props[key])
                 }
