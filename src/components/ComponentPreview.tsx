@@ -12,7 +12,7 @@ interface ComponentPreviewProps {
 
 export function ComponentPreview({ component }: ComponentPreviewProps) {
   const [copied, setCopied] = useState(false)
-  const [variantTab, setVariantTab] = useState<{ [key: string]: 'preview' | 'code' }>({})
+  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview')
 
   // Helper for StarIcon code snippets
   const starIconCode = {
@@ -66,6 +66,28 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
           )}
         </div>
         <div className="flex items-center space-x-3">
+          <div className="flex gap-2">
+            <button
+              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                viewMode === 'preview' 
+                  ? 'bg-primary text-white' 
+                  : 'bg-muted text-black hover:bg-muted/80'
+              }`}
+              onClick={() => setViewMode('preview')}
+            >
+              Preview
+            </button>
+            <button
+              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                viewMode === 'code' 
+                  ? 'bg-primary text-white' 
+                  : 'bg-muted text-black hover:bg-muted/80'
+              }`}
+              onClick={() => setViewMode('code')}
+            >
+              Code
+            </button>
+          </div>
           {component.figmaUrl && (
             <Button variant="outline" size="sm" asChild>
               <a
@@ -118,22 +140,8 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
               }
               return (
                 <div key={variant.name || idx} className="mb-8">
-                  <div className="flex gap-4 items-center">
-                    <button
-                      className={`px-3 py-1 rounded ${variantTab[variant.name] !== 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
-                      onClick={() => setVariantTab(tabs => ({ ...tabs, [variant.name]: 'preview' }))}
-                    >
-                      Preview
-                    </button>
-                    <button
-                      className={`px-3 py-1 rounded ${variantTab[variant.name] === 'code' ? 'bg-primary text-white' : 'bg-muted text-black'}`}
-                      onClick={() => setVariantTab(tabs => ({ ...tabs, [variant.name]: 'code' }))}
-                    >
-                      Code
-                    </button>
-                  </div>
                   <div className="mt-4">
-                    {variantTab[variant.name] === 'code' ? (
+                    {viewMode === 'code' ? (
                       <pre className="bg-slate-950 text-slate-100 rounded p-4 text-sm overflow-x-auto">
                         <code>{code}</code>
                       </pre>
