@@ -5,86 +5,74 @@ interface AIChatPreviewProps {
 }
 
 export function AIChatPreview({ code }: AIChatPreviewProps) {
-  const [Component, setComponent] = useState<React.ComponentType | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [componentInfo, setComponentInfo] = useState<{
+    name: string
+    type: string
+    props: string[]
+    children: string
+  } | null>(null)
 
   useEffect(() => {
     if (!code) return
 
     try {
-      // Extract component name from code
-      const componentMatch = code.match(/const\s+(\w+):\s*React\.FC|const\s+(\w+)\s*=\s*\(|export\s+default\s+(\w+)/)
-      const componentName = componentMatch?.[1] || componentMatch?.[2] || componentMatch?.[3] || 'GeneratedComponent'
+      // Extract component name
+      const nameMatch = code.match(/const\s+(\w+)|export\s+default\s+(\w+)/)
+      const componentName = nameMatch?.[1] || nameMatch?.[2] || 'Component'
 
-      // Create a simple component from the code
-      // This is a basic implementation - in production you'd want a more robust solution
-      const processedCode = code
-        .replace(/import.*?from.*?['"];?\n?/g, '') // Remove imports
-        .replace(/export\s+default\s+.*?;?\n?/g, '') // Remove export default
-        .replace(/interface.*?{[\s\S]*?}/g, '') // Remove TypeScript interfaces
-        .replace(/:\s*React\.FC<.*?>/g, '') // Remove React.FC typing
-        .replace(/:\s*React\.ComponentType<.*?>/g, '') // Remove ComponentType typing
+      // Extract component type (button, div, etc.)
+      const typeMatch = code.match(/<(\w+)/)
+      const componentType = typeMatch?.[1] || 'div'
 
-      // Create a function that returns the component
-      const componentFunction = new Function('React', `
-        ${processedCode}
-        return ${componentName};
-      `)
+      // Extract props
+      const propsMatch = code.match(/interface\s+\w+Props\s*{([^}]*)}/)
+      const propsText = propsMatch?.[1] || ''
+      const props = propsText.split('\n')
+        .map(line => line.trim())
+        .filter(line => line && !line.startsWith('//'))
+        .map(line => line.replace(/[?:;].*$/, '').trim())
+        .filter(Boolean)
 
-      // Create a simple React-like object for the component
-      const ReactMock = {
-        createElement: (type: any, props: any, ...children: any[]) => {
-          if (typeof type === 'string') {
-            const element = document.createElement(type)
-            if (props) {
-              Object.keys(props).forEach(key => {
-                if (key === 'className') {
-                  element.className = props[key]
-                } else if (key === 'onClick') {
-                  element.onclick = props[key]
-                } else if (key.startsWith('on')) {
-                  ;(element as any)[key.toLowerCase()] = props[key]
-                } else {
-                  element.setAttribute(key, props[key])
-                }
-              })
-            }
-            children.forEach(child => {
-              if (typeof child === 'string') {
-                element.textContent = child
-              } else if (child) {
-                element.appendChild(child)
-              }
-            })
-            return element
-          }
-          return null
-        }
-      }
+      // Extract children content
+      const childrenMatch = code.match(/\{children\}/)
+      const hasChildren = !!childrenMatch
 
-      const component = componentFunction(ReactMock)
-      setComponent(() => component)
-      setError(null)
+      setComponentInfo({
+        name: componentName,
+        type: componentType,
+        props: props,
+        children: hasChildren ? 'Dynamic content' : 'No children'
+      })
     } catch (err) {
-      setError('Failed to render component preview')
-      setComponent(null)
+      setComponentInfo(null)
     }
   }, [code])
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>
+  if (!componentInfo) {
+    return <div className="text-gray-500">Analyzing component...</div>
   }
 
-  if (!Component) {
-    return <div className="text-gray-500">Loading preview...</div>
-  }
-
-  // For now, render a simple placeholder since dynamic component rendering is complex
   return (
-    <div className="text-center">
-      <div className="text-sm text-gray-600 mb-2">Component Preview</div>
-      <div className="text-xs text-gray-500">
-        Dynamic preview coming soon...
+    <div className="space-y-4">
+      <div className="text-center">
+        <h3 className="font-semibold text-lg mb-2">{componentInfo.name}</h3>
+        <div className="text-sm text-gray-600 mb-4">
+          A {componentInfo.type} component
+        </div>
+      </div>
+
+      {/* Visual representation */}
+      <div className="flex justify-center">
+        <div className={`${componentInfo.type === 'button' ? 'bg-red-500 text-white px-4 py-2 rounded' : 'border p-4'} text-center`}>
+          {componentInfo.children}
+        </div>
+      </div>
+
+      {/* Component info */}
+      <div className="text-xs text-gray-500 space-y-1">
+        <div><strong>Type:</strong> {componentInfo.type}</div>
+        <div><strong>Props:</strong> {componentInfo.props.length > 0 ? componentInfo.props.join(', ') : 'None'}</div>
+        <div><strong>Children:</strong> {componentInfo.children}</div>
       </div>
     </div>
   )
