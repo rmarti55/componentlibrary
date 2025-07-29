@@ -65,11 +65,6 @@ export function ComponentSidebar({
 
   return (
     <div className="h-full flex flex-col bg-background border-r relative">
-      {/* Header */}
-      <div className="p-6 border-b">
-        <h2 className="text-2xl font-bold tracking-tight">Components</h2>
-      </div>
-
       {/* Search */}
       <div className="p-4 border-b">
         <div className="relative">
