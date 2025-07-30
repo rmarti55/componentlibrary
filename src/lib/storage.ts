@@ -79,7 +79,7 @@ export class VercelKVProvider implements StorageProvider {
 
 // Future Supabase Implementation (placeholder)
 export class SupabaseProvider implements StorageProvider {
-  async saveComponent(component: ComponentData): Promise<boolean> {
+  async saveComponent(_component: ComponentData): Promise<boolean> {
     // TODO: Implement Supabase integration
     throw new Error('Supabase provider not implemented yet')
   }
@@ -89,12 +89,12 @@ export class SupabaseProvider implements StorageProvider {
     throw new Error('Supabase provider not implemented yet')
   }
 
-  async getComponent(id: string): Promise<ComponentData | null> {
+  async getComponent(_id: string): Promise<ComponentData | null> {
     // TODO: Implement Supabase integration
     throw new Error('Supabase provider not implemented yet')
   }
 
-  async deleteComponent(id: string): Promise<boolean> {
+  async deleteComponent(_id: string): Promise<boolean> {
     // TODO: Implement Supabase integration
     throw new Error('Supabase provider not implemented yet')
   }

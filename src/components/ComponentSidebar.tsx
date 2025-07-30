@@ -86,52 +86,53 @@ export function ComponentSidebar({
         ) : (
           groupedComponents.map(section => (
             <div key={section.id} className="space-y-2">
-            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
-              {section.label}
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
+                {section.label}
+              </div>
+              {section.variants.length === 0 ? (
+                <div className="text-xs text-muted-foreground px-2 py-4">No components</div>
+              ) : (
+                section.variants.map(variant => (
+                  <Card
+                    key={variant.id}
+                    className={cn(
+                      "cursor-pointer transition-all hover:shadow-md flex items-center justify-between",
+                      selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
+                    )}
+                    onClick={() => onComponentSelect({
+                      ...variant,
+                      code: variant.code || '',
+                      createdAt: variant.created ? new Date(variant.created) : new Date(),
+                      updatedAt: new Date(),
+                      interactive: variant.interactive || false,
+                      states: variant.states || []
+                    } as Component)}
+                  >
+                    <CardContent className="p-2 flex flex-row items-center w-full justify-between">
+                      <div>
+                        <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
+                        {variant.description && (
+                          <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
+                            {variant.description}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        className="ml-2 p-1 rounded group"
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleHide(variant as Component)
+                        }}
+                        title="Hide component"
+                      >
+                        <Eye className="w-4 h-4 text-muted-foreground group-hover:text-black" />
+                      </button>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
-            {section.variants.length === 0 ? (
-              <div className="text-xs text-muted-foreground px-2 py-4">No components</div>
-            ) : (
-              section.variants.map(variant => (
-                <Card
-                  key={variant.id}
-                  className={cn(
-                    "cursor-pointer transition-all hover:shadow-md flex items-center justify-between",
-                    selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
-                  )}
-                  onClick={() => onComponentSelect({
-                    ...variant,
-                    code: variant.code || '',
-                    createdAt: variant.created ? new Date(variant.created) : new Date(),
-                    updatedAt: new Date(),
-                    interactive: variant.interactive || false,
-                    states: variant.states || []
-                  } as Component)}
-                >
-                  <CardContent className="p-2 flex flex-row items-center w-full justify-between">
-                    <div>
-                      <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
-                      {variant.description && (
-                        <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
-                          {variant.description}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      className="ml-2 p-1 rounded group"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleHide(variant as Component)
-                      }}
-                      title="Hide component"
-                    >
-                      <Eye className="w-4 h-4 text-muted-foreground group-hover:text-black" />
-                    </button>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
+          ))
         )}
       </div>
 
