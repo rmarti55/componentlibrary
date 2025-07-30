@@ -85,7 +85,7 @@ export function ComponentSidebar({
           <div className="text-center text-muted-foreground">Loading components...</div>
         ) : (
           groupedComponents.map(section => (
-          <div key={section.id} className="space-y-2">
+            <div key={section.id} className="space-y-2">
             <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
               {section.label}
             </div>
@@ -103,7 +103,9 @@ export function ComponentSidebar({
                     ...variant,
                     code: variant.code || '',
                     createdAt: variant.created ? new Date(variant.created) : new Date(),
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    interactive: variant.interactive || false,
+                    states: variant.states || []
                   } as Component)}
                 >
                   <CardContent className="p-2 flex flex-row items-center w-full justify-between">
@@ -130,7 +132,7 @@ export function ComponentSidebar({
               ))
             )}
           </div>
-        ))}
+        )}
       </div>
 
       {/* Hidden Components Bar */}

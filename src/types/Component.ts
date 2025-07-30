@@ -11,6 +11,9 @@ export interface Component {
   updatedAt: Date
   tags?: string[]
   category?: string
+  aiGenerated?: boolean
+  states?: ComponentState[]
+  interactive?: boolean
 }
 
 export interface ComponentVariant {

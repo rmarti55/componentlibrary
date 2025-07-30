@@ -14,6 +14,7 @@ export interface ComponentData {
     props: Record<string, any>
     description: string
   }>
+  interactive?: boolean
 }
 
 export function useComponents() {
