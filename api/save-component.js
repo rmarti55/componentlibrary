@@ -1,6 +1,3 @@
-import { writeFile, readFile } from 'fs/promises'
-import { join } from 'path'
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -15,34 +12,12 @@ export default async function handler(req, res) {
     // Sanitize component name
     const sanitizedName = componentName.replace(/[^a-zA-Z0-9]/g, '')
     const fileName = `${sanitizedName}.tsx`
-    const filePath = join(process.cwd(), 'src', 'components', fileName)
+    
+    // Extract component name from code for import
+    const nameMatch = componentCode.match(/const\s+(\w+)|export\s+default\s+(\w+)/)
+    const componentExportName = nameMatch?.[1] || nameMatch?.[2] || sanitizedName
 
-    // Create component file
-    await writeFile(filePath, componentCode)
-
-    // Update component registry
-    const registryPath = join(process.cwd(), 'src', 'data', 'componentCategories.ts')
-    const registryContent = await readFile(registryPath, 'utf-8')
-
-    // Add component to registry (simplified - would need more complex parsing in production)
-    const newComponentEntry = `
-      {
-        id: '${sanitizedName.toLowerCase()}',
-        name: '${sanitizedName}',
-        description: 'AI-generated component',
-        component: ${sanitizedName},
-        interactive: false,
-        code: \`${componentCode.replace(/`/g, '\\`')}\`,
-        states: [
-          {
-            name: 'Default',
-            props: {},
-            description: 'Default state'
-          }
-        ]
-      }`
-
-    // Find the category and add the component
+    // Map category to registry category
     const categoryMap = {
       'atom': 'atoms',
       'molecule': 'molecules', 
@@ -50,23 +25,36 @@ export default async function handler(req, res) {
     }
     
     const targetCategory = categoryMap[category] || 'atoms'
-    
-    // This is a simplified approach - in production you'd want proper AST parsing
-    const updatedContent = registryContent.replace(
-      new RegExp(`(variants: \\[)([^\\]]*)(\\], // ${targetCategory})`),
-      `$1${newComponentEntry},$2$3`
-    )
 
-    await writeFile(registryPath, updatedContent)
+    // Create registry entry
+    const newComponentEntry = `{
+  id: '${sanitizedName.toLowerCase()}',
+  name: '${sanitizedName}',
+  description: 'AI-generated component',
+  component: ${componentExportName},
+  interactive: false,
+  code: \`${componentCode.replace(/`/g, '\\`')}\`,
+  states: [
+    {
+      name: 'Default',
+      props: {},
+      description: 'Default state'
+    }
+  ]
+}`
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Component saved successfully',
+      message: 'Component ready for library integration',
       fileName,
-      category: targetCategory
+      componentCode,
+      componentName: sanitizedName,
+      category: targetCategory,
+      registryEntry: newComponentEntry,
+      instructions: `Add this component to src/components/${fileName} and update src/data/componentCategories.ts`
     })
   } catch (error) {
     console.error('Save component error:', error)
-    return res.status(500).json({ error: 'Failed to save component' })
+    return res.status(500).json({ error: 'Failed to process component' })
   }
 } 
