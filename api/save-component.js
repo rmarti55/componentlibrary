@@ -1,5 +1,3 @@
-import { componentStorage } from '../../src/lib/storage.js'
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -13,6 +11,7 @@ export default async function handler(req, res) {
   try {
     // Sanitize component name
     const sanitizedName = componentName.replace(/[^a-zA-Z0-9]/g, '')
+    const fileName = `${sanitizedName}.tsx`
     
     // Extract component name from code for import
     const nameMatch = componentCode.match(/const\s+(\w+)|export\s+default\s+(\w+)/)
@@ -27,39 +26,33 @@ export default async function handler(req, res) {
     
     const targetCategory = categoryMap[category] || 'atoms'
 
-    // Create component data for storage
-    const componentData = {
-      id: `ai-${sanitizedName.toLowerCase()}-${Date.now()}`,
-      name: sanitizedName,
-      category: targetCategory,
-      code: componentCode,
-      description: 'AI-generated component',
-      created: new Date().toISOString(),
-      aiGenerated: true,
-      componentName: componentExportName,
-      states: [
-        {
-          name: 'Default',
-          props: {},
-          description: 'Default state'
-        }
-      ]
+    // Create registry entry for componentCategories.ts
+    const newComponentEntry = `{
+  id: '${sanitizedName.toLowerCase()}',
+  name: '${sanitizedName}',
+  description: 'AI-generated component',
+  component: ${componentExportName},
+  interactive: false,
+  code: \`${componentCode.replace(/`/g, '\\`')}\`,
+  states: [
+    {
+      name: 'Default',
+      props: {},
+      description: 'Default state'
     }
+  ]
+}`
 
-    // Save to database
-    const success = await componentStorage.saveComponent(componentData)
-    
-    if (success) {
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Component saved to library successfully!',
-        componentId: componentData.id,
-        componentName: sanitizedName,
-        category: targetCategory
-      })
-    } else {
-      return res.status(500).json({ error: 'Failed to save component to database' })
-    }
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Component ready for file creation',
+      fileName,
+      componentCode,
+      componentName: sanitizedName,
+      category: targetCategory,
+      registryEntry: newComponentEntry,
+      instructions: `Create src/components/${fileName} with the component code and add the registry entry to src/data/componentCategories.ts in the ${targetCategory} category`
+    })
   } catch (error) {
     console.error('Save component error:', error)
     return res.status(500).json({ error: 'Failed to process component' })

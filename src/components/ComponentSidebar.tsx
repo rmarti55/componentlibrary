@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Component, ComponentCategory } from '@/types/Component'
-import { useComponents } from '@/hooks/useComponents'
+import { componentCategories } from '@/data/componentCategories'
 import { Search, EyeOff, Eye } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -25,29 +25,28 @@ export function ComponentSidebar({
   const [searchQuery, setSearchQuery] = useState('')
   const [hiddenComponents, setHiddenComponents] = useState<Component[]>([])
   const [showHidden, setShowHidden] = useState(false)
-  const { components, loading } = useComponents()
 
-  // Group components by category
-  const groupedComponents = ATOMIC_SECTIONS.map(section => {
-    const sectionComponents = components.filter(comp => comp.category === section.id)
+  // Flat list of all variants, grouped by atomic section
+  const atomicVariants = ATOMIC_SECTIONS.map(section => {
+    const category = componentCategories.find(cat => cat.id === section.id)
     return {
       ...section,
-      variants: sectionComponents.filter(variant => {
+      variants: category ? category.variants.filter(variant => {
         const matchesSearch =
           variant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           variant.description?.toLowerCase().includes(searchQuery.toLowerCase())
         // Hide if in hiddenComponents
         const isHidden = hiddenComponents.some(h => h.id === variant.id)
         return matchesSearch && !isHidden
-      })
+      }) : []
     }
   })
 
   // Helper to find the original section for a hidden component
   const getSectionLabel = (component: Component) => {
     for (const section of ATOMIC_SECTIONS) {
-      const sectionComponents = components.filter(comp => comp.category === section.id)
-      if (sectionComponents.some(variant => variant.id === component.id)) {
+      const category = componentCategories.find(cat => cat.id === section.id)
+      if (category && category.variants.some(variant => variant.id === component.id)) {
         return section.label
       }
     }
@@ -81,59 +80,53 @@ export function ComponentSidebar({
 
       {/* Flat Atomic Sections */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-32">
-        {loading ? (
-          <div className="text-center text-muted-foreground">Loading components...</div>
-        ) : (
-          groupedComponents.map(section => (
-            <div key={section.id} className="space-y-2">
-              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
-                {section.label}
-              </div>
-              {section.variants.length === 0 ? (
-                <div className="text-xs text-muted-foreground px-2 py-4">No components</div>
-              ) : (
-                section.variants.map(variant => (
-                  <Card
-                    key={variant.id}
-                    className={cn(
-                      "cursor-pointer transition-all hover:shadow-md flex items-center justify-between",
-                      selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
-                    )}
-                    onClick={() => onComponentSelect({
-                      ...variant,
-                      code: variant.code || '',
-                      createdAt: variant.created ? new Date(variant.created) : new Date(),
-                      updatedAt: new Date(),
-                      interactive: variant.interactive || false,
-                      states: variant.states || []
-                    } as Component)}
-                  >
-                    <CardContent className="p-2 flex flex-row items-center w-full justify-between">
-                      <div>
-                        <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
-                        {variant.description && (
-                          <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
-                            {variant.description}
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        className="ml-2 p-1 rounded group"
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleHide(variant as Component)
-                        }}
-                        title="Hide component"
-                      >
-                        <Eye className="w-4 h-4 text-muted-foreground group-hover:text-black" />
-                      </button>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+        {atomicVariants.map(section => (
+          <div key={section.id} className="space-y-2">
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
+              {section.label}
             </div>
-          ))
-        )}
+            {section.variants.length === 0 ? (
+              <div className="text-xs text-muted-foreground px-2 py-4">No components</div>
+            ) : (
+              section.variants.map(variant => (
+                <Card
+                  key={variant.id}
+                  className={cn(
+                    "cursor-pointer transition-all hover:shadow-md flex items-center justify-between",
+                    selectedComponent?.id === variant.id && "ring-2 ring-primary shadow-md"
+                  )}
+                  onClick={() => onComponentSelect({
+                    ...variant,
+                    code: variant.code || '',
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                  })}
+                >
+                  <CardContent className="p-2 flex flex-row items-center w-full justify-between">
+                    <div>
+                      <h3 className="font-medium text-xs leading-snug truncate">{variant.name}</h3>
+                      {variant.description && (
+                        <p className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
+                          {variant.description}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      className="ml-2 p-1 rounded group"
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleHide(variant as Component)
+                      }}
+                      title="Hide component"
+                    >
+                      <Eye className="w-4 h-4 text-muted-foreground group-hover:text-black" />
+                    </button>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Hidden Components Bar */}

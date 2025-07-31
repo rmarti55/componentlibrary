@@ -63,10 +63,17 @@ export default function AIChat() {
 
       const data = await saveResponse.json()
       if (data.success) {
-        alert(`Component saved successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nIt's now available in the component library!`)
+        const message = `Component processed successfully!\n\n` +
+          `File: ${data.fileName}\n` +
+          `Category: ${data.category}\n\n` +
+          `To add to library:\n` +
+          `1. Create src/components/${data.fileName}\n` +
+          `2. Add the component code\n` +
+          `3. Update src/data/componentCategories.ts\n\n` +
+          `Component will appear in sidebar after deployment.`
+        
+        alert(message)
         setShowSave(false)
-        setResponse('')
-        setMessage('')
       } else {
         alert('Failed to save component: ' + data.error)
       }
