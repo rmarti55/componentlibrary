@@ -265,13 +265,17 @@ export function useComponentRegistry() {
       if (existingByName || existingById) {
         // Update existing component instead of creating duplicate
         const existing = existingByName || existingById
-        return prev.map(c => 
-          (c.id === existing.id || c.name.toLowerCase() === component.name.toLowerCase())
-            ? { ...component, updatedAt: new Date() }
-            : c
-        )
-      } else {
-        return [...prev, { ...component, createdAt: new Date(), updatedAt: new Date() }]
+        if (existing) {
+          return prev.map(c => 
+            (c.id === existing.id || c.name.toLowerCase() === component.name.toLowerCase())
+              ? { ...component, updatedAt: new Date() }
+              : c
+          )
+        }
+      }
+      
+            // If no existing component found, add new one
+      return [...prev, { ...component, createdAt: new Date(), updatedAt: new Date() }]
       }
     })
   }

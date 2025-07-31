@@ -1,7 +1,6 @@
 import { ComponentCategory } from '@/types/Component'
 import FilterChips from '@/components/FilterChips'
 import Button from '@/components/ai/Button'
-import Button from '@/components/ai/Button'
 import CommentsChip from '@/components/CommentsChip'
 import FilterChip from '@/components/FilterChip'
 import MultiBrandDashboard from '@/components/MultiBrandDashboard'
