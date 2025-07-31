@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ButtonProps {
   children: React.ReactNode;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
@@ -16,6 +16,4 @@ const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
   );
 };
 
-export default Button;
-
-// Categorized as: atom
+export default Button; // atom
