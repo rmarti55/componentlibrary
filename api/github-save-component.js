@@ -111,29 +111,65 @@ export default async function handler(req, res) {
     const currentRegistry = Buffer.from(registryData.content, 'base64').toString('utf-8')
     const registrySha = registryData.sha
 
+    // Add import statement for the AI component
+    const importStatement = `import ${componentExportName} from '@/components/ai/${sanitizedName}'\n`
+    const updatedRegistryWithImport = currentRegistry.replace(
+      /^(import.*?from.*?['"]@\/components\/.*?['"]\n)/m,
+      `$1${importStatement}`
+    )
+    
     // Create new component entry
-    const newComponentEntry = `{
-  id: '${sanitizedName.toLowerCase()}',
-  name: '${sanitizedName}',
-  description: 'AI-generated component',
-  component: ${componentExportName},
-  interactive: false,
-  code: \`${componentCode.replace(/`/g, '\\`')}\`,
-  states: [
-    {
-      name: 'Default',
-      props: {},
-      description: 'Default state'
-    }
-  ]
-}`
+    const newComponentEntry = `      {
+        id: '${sanitizedName.toLowerCase()}',
+        name: '${sanitizedName}',
+        description: 'AI-generated component',
+        component: ${componentExportName},
+        interactive: false,
+        code: \`${componentCode.replace(/`/g, '\\`')}\`,
+        states: [
+          {
+            name: 'Default',
+            props: {},
+            description: 'Default state'
+          }
+        ]
+      }`
 
     // Find the category and add the component
-    const categoryRegex = new RegExp(`(variants: \\[)([^\\]]*)(\\], // ${targetCategory})`)
-    const updatedRegistry = currentRegistry.replace(
-      categoryRegex,
-      `$1${newComponentEntry},$2$3`
-    )
+    // Look for the category by its id and insert the component into its variants array
+    const categoryStartRegex = new RegExp(`(id: '${targetCategory}',[\\s\\S]*?variants: \\[)`)
+    const categoryMatch = updatedRegistryWithImport.match(categoryStartRegex)
+    
+    if (!categoryMatch) {
+      return res.status(500).json({ 
+        error: `Category '${targetCategory}' not found in registry`,
+        fallback: true 
+      })
+    }
+    
+    // Find the end of the variants array for this category
+    const categoryStartIndex = categoryMatch.index + categoryMatch[0].length
+    const afterCategoryStart = updatedRegistryWithImport.substring(categoryStartIndex)
+    
+    // Find the closing bracket of the variants array
+    let bracketCount = 0
+    let variantsEndIndex = 0
+    
+    for (let i = 0; i < afterCategoryStart.length; i++) {
+      if (afterCategoryStart[i] === '[') bracketCount++
+      if (afterCategoryStart[i] === ']') {
+        bracketCount--
+        if (bracketCount === 0) {
+          variantsEndIndex = i
+          break
+        }
+      }
+    }
+    
+    // Insert the new component at the beginning of the variants array
+    const beforeVariants = updatedRegistryWithImport.substring(0, categoryStartIndex)
+    const afterVariants = afterCategoryStart.substring(variantsEndIndex)
+    const updatedRegistry = beforeVariants + newComponentEntry + ',' + afterCategoryStart.substring(0, variantsEndIndex) + afterVariants
 
     // Commit registry update
     const registryUpdateResponse = await fetch(

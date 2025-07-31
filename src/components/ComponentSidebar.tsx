@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Component, ComponentCategory } from '@/types/Component'
 import { componentCategories } from '@/data/componentCategories'
-import { Search, EyeOff, Eye } from 'lucide-react'
+import { useComponentRegistry } from '@/hooks/useComponentRegistry'
+import { Search, EyeOff, Eye, RefreshCw } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface ComponentSidebarProps {
@@ -25,10 +27,26 @@ export function ComponentSidebar({
   const [searchQuery, setSearchQuery] = useState('')
   const [hiddenComponents, setHiddenComponents] = useState<Component[]>([])
   const [showHidden, setShowHidden] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  
+  const { components: dynamicComponents, addComponent, fetchFromGitHub, isLoading } = useComponentRegistry()
+
+  // Merge static categories with dynamic components
+  const mergedCategories = componentCategories.map(category => {
+    const dynamicVariants = dynamicComponents.filter(comp => 
+      comp.category?.toLowerCase() === category.id || 
+      comp.category?.toLowerCase() === category.name?.toLowerCase()
+    )
+    
+    return {
+      ...category,
+      variants: [...category.variants, ...dynamicVariants]
+    }
+  })
 
   // Flat list of all variants, grouped by atomic section
   const atomicVariants = ATOMIC_SECTIONS.map(section => {
-    const category = componentCategories.find(cat => cat.id === section.id)
+    const category = mergedCategories.find(cat => cat.id === section.id)
     return {
       ...section,
       variants: category ? category.variants.filter(variant => {
@@ -45,7 +63,7 @@ export function ComponentSidebar({
   // Helper to find the original section for a hidden component
   const getSectionLabel = (component: Component) => {
     for (const section of ATOMIC_SECTIONS) {
-      const category = componentCategories.find(cat => cat.id === section.id)
+      const category = mergedCategories.find(cat => cat.id === section.id)
       if (category && category.variants.some(variant => variant.id === component.id)) {
         return section.label
       }
@@ -63,18 +81,42 @@ export function ComponentSidebar({
     setHiddenComponents(prev => prev.filter(c => c.id !== component.id))
   }
 
+  // Refresh components from GitHub
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await fetchFromGitHub()
+    } catch (error) {
+      console.error('Error refreshing components:', error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   return (
     <div className="h-full flex flex-col bg-background border-r relative">
-      {/* Search */}
+      {/* Search and Refresh */}
       <div className="p-4 border-b">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search components..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+        <div className="flex gap-2 mb-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search components..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isRefreshing || isLoading}
+            className="px-2"
+            title="Refresh components from GitHub"
+          >
+            <RefreshCw className={cn("h-4 w-4", (isRefreshing || isLoading) && "animate-spin")} />
+          </Button>
         </div>
       </div>
 

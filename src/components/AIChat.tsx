@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, Loader2, Eye, Code, Save, Download } from 'lucide-react'
 import { AIChatPreview } from './AIChatPreview'
+import { useComponentRegistry } from '@/hooks/useComponentRegistry'
 
 export default function AIChat() {
   const [message, setMessage] = useState('')
@@ -13,6 +14,7 @@ export default function AIChat() {
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code')
   const [showSave, setShowSave] = useState(false)
   const [saving, setSaving] = useState(false)
+  const { addComponent } = useComponentRegistry()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,7 +68,20 @@ export default function AIChat() {
       const data = await saveResponse.json()
       
       if (data.success) {
-        alert(`✅ Component saved to GitHub successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nIt will appear in the sidebar after deployment.`)
+        // Add component to local registry immediately
+        const sanitizedName = data.componentName.replace(/[^a-zA-Z0-9]/g, '')
+        addComponent({
+          id: sanitizedName.toLowerCase(),
+          name: sanitizedName,
+          description: 'AI-generated component',
+          category: data.category,
+          tags: ['ai-generated', 'github'],
+          code: response,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        
+        alert(`✅ Component saved to GitHub successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nComponent is now available in the sidebar!`)
         setShowSave(false)
         setResponse('')
         setMessage('')

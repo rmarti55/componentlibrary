@@ -128,6 +128,8 @@ export default MultiBrandDashboard;`,
 
 export function useComponentRegistry() {
   const [components, setComponents] = useState<Component[]>(INITIAL_COMPONENTS)
+  const [isLoading, setIsLoading] = useState(false)
+  const [lastFetched, setLastFetched] = useState<Date | null>(null)
 
   // Load components from localStorage on mount, but merge with initial components
   useEffect(() => {
@@ -167,6 +169,55 @@ export function useComponentRegistry() {
     localStorage.setItem('mcp-visualizer-components', JSON.stringify(componentsToSave))
   }, [components])
 
+  // Fetch components from GitHub
+  const fetchFromGitHub = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/fetch-components')
+      if (response.ok) {
+        const data = await response.json()
+        
+        if (data.success) {
+          // Parse the registry content to extract new components
+          // This is a simplified approach - in a real implementation you'd want to properly parse the TypeScript
+          const newComponents: Component[] = []
+          
+          // Add AI-generated components
+          if (data.aiComponents) {
+            data.aiComponents.forEach((aiComp: any) => {
+              const componentName = aiComp.name
+              const sanitizedName = componentName.replace(/[^a-zA-Z0-9]/g, '')
+              
+              newComponents.push({
+                id: sanitizedName.toLowerCase(),
+                name: sanitizedName,
+                description: 'AI-generated component from GitHub',
+                category: 'atoms', // Default category
+                tags: ['ai-generated', 'github'],
+                code: aiComp.content,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              })
+            })
+          }
+          
+          // Merge with existing components
+          setComponents(prev => {
+            const existingIds = new Set(prev.map(c => c.id))
+            const uniqueNewComponents = newComponents.filter(c => !existingIds.has(c.id))
+            return [...prev, ...uniqueNewComponents]
+          })
+          
+          setLastFetched(new Date())
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching components from GitHub:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const addComponent = (component: Component) => {
     setComponents(prev => {
       const existing = prev.find(c => c.id === component.id)
@@ -194,6 +245,9 @@ export function useComponentRegistry() {
     components,
     addComponent,
     removeComponent,
-    updateComponent
+    updateComponent,
+    fetchFromGitHub,
+    isLoading,
+    lastFetched
   }
 } 
