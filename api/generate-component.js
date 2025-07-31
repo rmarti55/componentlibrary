@@ -19,7 +19,26 @@ export default async function handler(req, res) {
       messages: [
         {
           role: 'system',
-          content: `You are a React component generator. Create React components with TypeScript, Tailwind CSS, and follow the existing patterns in this codebase. Also categorize the component as 'atom', 'molecule', or 'organism' based on complexity. Return JSON with 'code' and 'category' fields.`
+          content: `You are a React component generator. Create React components with TypeScript and Tailwind CSS. 
+
+IMPORTANT: Return ONLY the component code without any markdown formatting, explanations, or additional text. The response should be a valid React TypeScript component that can be directly saved to a .tsx file.
+
+Example format:
+import React from 'react';
+
+interface ComponentProps {
+  // props here
+}
+
+const Component: React.FC<ComponentProps> = ({ props }) => {
+  return (
+    <div>Component content</div>
+  );
+};
+
+export default Component;
+
+Also categorize the component as 'atom', 'molecule', or 'organism' based on complexity.`
         },
         {
           role: 'user',
@@ -33,20 +52,57 @@ export default async function handler(req, res) {
 
     const response = completion.choices[0]?.message?.content || ''
     
-    // Try to parse as JSON first
-    try {
-      const parsed = JSON.parse(response)
-      return res.status(200).json({ 
-        componentCode: parsed.code, 
-        category: parsed.category || 'atom' 
-      })
-    } catch {
-      // Fallback to plain text if not JSON
-      return res.status(200).json({ 
-        componentCode: response, 
-        category: 'atom' 
-      })
+    // Clean the response to remove markdown formatting
+    let cleanCode = response
+    
+    // Remove markdown code blocks
+    cleanCode = cleanCode.replace(/```typescript\s*/g, '')
+    cleanCode = cleanCode.replace(/```tsx\s*/g, '')
+    cleanCode = cleanCode.replace(/```jsx\s*/g, '')
+    cleanCode = cleanCode.replace(/```\s*/g, '')
+    
+    // Remove explanations and markdown text
+    const lines = cleanCode.split('\n')
+    const codeLines = []
+    let inCode = false
+    
+    for (const line of lines) {
+      // Skip lines that are clearly explanations
+      if (line.trim().startsWith('Here is') || 
+          line.trim().startsWith('You can use') ||
+          line.trim().startsWith('The category') ||
+          line.trim().startsWith('Example') ||
+          line.trim().startsWith('// Example') ||
+          line.trim().startsWith('// Usage') ||
+          line.trim().startsWith('// App.tsx')) {
+        continue
+      }
+      
+      // If we find import React, we're in the code
+      if (line.includes('import React') || line.includes('import {') || line.includes('interface') || line.includes('const ') || line.includes('export default')) {
+        inCode = true
+      }
+      
+      if (inCode) {
+        codeLines.push(line)
+      }
     }
+    
+    cleanCode = codeLines.join('\n').trim()
+    
+    // Determine category based on component complexity
+    let category = 'atom'
+    if (cleanCode.includes('useState') || cleanCode.includes('useEffect') || cleanCode.includes('useContext')) {
+      category = 'molecule'
+    }
+    if (cleanCode.includes('useState') && cleanCode.includes('useEffect') && cleanCode.length > 500) {
+      category = 'organism'
+    }
+
+    return res.status(200).json({ 
+      componentCode: cleanCode, 
+      category: category 
+    })
   } catch (error) {
     console.error('Groq API error:', error)
     return res.status(500).json({ error: 'Failed to generate component' })
