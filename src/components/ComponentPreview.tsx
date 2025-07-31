@@ -136,7 +136,12 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                 )
               } else if (variant.component) {
                 const Comp = variant.component
-                preview = <Comp {...(variant.props || {})} />
+                // Pass default children for Button components
+                const defaultProps = variant.props || {}
+                if (component.name === 'Button' && !defaultProps.children) {
+                  defaultProps.children = 'Click me'
+                }
+                preview = <Comp {...defaultProps} />
               } else if (variant.code && !variant.component) {
                 // For dynamic components without a component function, show a placeholder
                 preview = (

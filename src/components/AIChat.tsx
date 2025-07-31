@@ -70,7 +70,7 @@ export default function AIChat() {
       if (data.success) {
         // Add component to local registry immediately
         const sanitizedName = data.componentName.replace(/[^a-zA-Z0-9]/g, '')
-        addComponent({
+        const componentData = {
           id: sanitizedName.toLowerCase(),
           name: sanitizedName,
           description: 'AI-generated component',
@@ -79,9 +79,12 @@ export default function AIChat() {
           code: response,
           createdAt: new Date(),
           updatedAt: new Date()
-        })
+        }
         
-        alert(`✅ Component saved to GitHub successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nComponent is now available in the sidebar!`)
+        addComponent(componentData)
+        
+        const message = `✅ Component saved to GitHub successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nComponent is now available in the sidebar!`
+        alert(message)
         setShowSave(false)
         setResponse('')
         setMessage('')
