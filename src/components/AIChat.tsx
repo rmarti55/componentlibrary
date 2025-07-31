@@ -1,8 +1,7 @@
 import { useState } from 'react'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Send, Loader2, Eye, Code, Save } from 'lucide-react'
+import { Send, Loader2, Eye, Code, Save, Download } from 'lucide-react'
 import { AIChatPreview } from './AIChatPreview'
 
 export default function AIChat() {
@@ -13,6 +12,7 @@ export default function AIChat() {
   const [componentName, setComponentName] = useState('')
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code')
   const [showSave, setShowSave] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,8 +50,10 @@ export default function AIChat() {
   const handleSave = async () => {
     if (!response || !componentName) return
 
+    setSaving(true)
     try {
-      const saveResponse = await fetch('/api/save-component', {
+      // Try GitHub API first
+      const saveResponse = await fetch('/api/github-save-component', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,45 +64,92 @@ export default function AIChat() {
       })
 
       const data = await saveResponse.json()
+      
       if (data.success) {
-        const message = `Component processed successfully!\n\n` +
-          `File: ${data.fileName}\n` +
-          `Category: ${data.category}\n\n` +
-          `To add to library:\n` +
-          `1. Create src/components/${data.fileName}\n` +
-          `2. Add the component code\n` +
-          `3. Update src/data/componentCategories.ts\n\n` +
-          `Component will appear in sidebar after deployment.`
-        
-        alert(message)
+        alert(`✅ Component saved to GitHub successfully!\n\nComponent: ${data.componentName}\nCategory: ${data.category}\n\nIt will appear in the sidebar after deployment.`)
         setShowSave(false)
+        setResponse('')
+        setMessage('')
+      } else if (data.fallback) {
+        // Fallback to download
+        handleDownload()
       } else {
         alert('Failed to save component: ' + data.error)
       }
     } catch (error) {
-      alert('Error saving component. Please try again.')
+      // Fallback to download on any error
+      handleDownload()
+    } finally {
+      setSaving(false)
     }
   }
 
-  return (
-    <div className="flex flex-col h-full p-4">
-      <h3 className="text-lg font-semibold mb-4">AI Component Generator</h3>
-      
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
-        <Input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Create a red button component..."
-          disabled={isLoading}
-        />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-        </Button>
-      </form>
+  const handleDownload = () => {
+    if (!response || !componentName) return
 
+    // Create component file content
+    const sanitizedName = componentName.replace(/[^a-zA-Z0-9]/g, '')
+    const fileName = `${sanitizedName}.tsx`
+    
+    // Create download
+    const blob = new Blob([response], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    // Show instructions
+    const message = `📁 Component downloaded!\n\n` +
+      `File: ${fileName}\n` +
+      `Category: ${category}\n\n` +
+      `To add to library:\n` +
+      `1. Save ${fileName} to src/components/ai/\n` +
+      `2. Update src/data/componentCategories.ts\n` +
+      `3. Commit and push to GitHub\n\n` +
+      `Component will appear in sidebar after deployment.`
+    
+    alert(message)
+    setShowSave(false)
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-semibold">AI Component Generator</h2>
+        <p className="text-sm text-muted-foreground">
+          Describe a component and AI will generate it for you
+        </p>
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-b">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Input
+            placeholder="Create a red button component..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            disabled={isLoading}
+            className="flex-1"
+          />
+          <Button type="submit" disabled={isLoading || !message.trim()}>
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+          </Button>
+        </form>
+      </div>
+
+      {/* Response */}
       {response && (
         <div className="flex-1 overflow-auto">
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 p-4">
             <button
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                 viewMode === 'code' 
@@ -136,24 +185,36 @@ export default function AIChat() {
                 </select>
                 <button
                   onClick={handleSave}
-                  className="px-3 py-1 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700 transition-colors"
+                  disabled={saving}
+                  className="px-3 py-1 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4 inline mr-1" />
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
                   Save to Library
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
                 </button>
               </div>
             )}
           </div>
           
-          {viewMode === 'code' ? (
-            <pre className="bg-slate-950 text-slate-100 rounded p-4 text-sm overflow-x-auto">
-              <code>{response}</code>
-            </pre>
-          ) : (
-            <div className="bg-white border rounded-lg p-8 flex items-center justify-center min-h-[200px]">
+          <div className="px-4 pb-4">
+            {viewMode === 'code' ? (
+              <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+                <code>{response}</code>
+              </pre>
+            ) : (
               <AIChatPreview code={response} />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </div>
