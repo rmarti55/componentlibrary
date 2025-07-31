@@ -274,9 +274,8 @@ export function useComponentRegistry() {
         }
       }
       
-            // If no existing component found, add new one
+      // If no existing component found, add new one
       return [...prev, { ...component, createdAt: new Date(), updatedAt: new Date() }]
-      }
     })
   }
 
