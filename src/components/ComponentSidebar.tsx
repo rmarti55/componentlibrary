@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Component, ComponentCategory } from '@/types/Component'
 import { componentCategories } from '@/data/componentCategories'
 import { useComponentRegistry } from '@/hooks/useComponentRegistry'
@@ -29,7 +29,7 @@ export function ComponentSidebar({
   const [showHidden, setShowHidden] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   
-  const { components: dynamicComponents, addComponent, fetchFromGitHub, isLoading } = useComponentRegistry()
+  const { components: dynamicComponents, fetchFromGitHub, isLoading } = useComponentRegistry()
 
   // Merge static categories with dynamic components
   const mergedCategories = componentCategories.map(category => {
