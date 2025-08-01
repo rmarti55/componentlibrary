@@ -38,10 +38,14 @@ export function DynamicComponentRenderer({ code, props = {} }: DynamicComponentR
       const compiled = Babel.transform(cleanCode, {
         presets: ['react', 'typescript'],
         filename: 'dynamic-component.tsx'
-      }).code
+      })
+
+      if (!compiled || !compiled.code) {
+        throw new Error('Failed to compile component code')
+      }
 
       // Create the component function
-      const componentFunction = new Function('React', 'require', compiled)
+      const componentFunction = new Function('React', 'require', compiled.code)
       const ReactModule = { createElement: React.createElement }
       const requireModule = (name: string) => {
         if (name === 'react') return ReactModule
