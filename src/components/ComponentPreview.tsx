@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import StarIcon from './StarIcon'
+import { DynamicComponentRenderer } from './DynamicComponentRenderer'
 
 interface ComponentPreviewProps {
   component: Component | null
@@ -143,13 +144,8 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                 }
                 preview = <Comp {...defaultProps} />
               } else if (variant.code && !variant.component) {
-                // For dynamic components without a component function, show a placeholder
-                preview = (
-                  <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center">
-                    <div className="text-gray-500 mb-2">Dynamic Component</div>
-                    <div className="text-sm text-gray-400">Switch to Code view to see the component code</div>
-                  </div>
-                )
+                // Use dynamic renderer for AI-generated components
+                preview = <DynamicComponentRenderer code={variant.code} props={variant.props || {}} />
               }
               return (
                 <div key={variant.name || idx} className="mb-8">

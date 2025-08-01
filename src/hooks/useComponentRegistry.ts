@@ -4,7 +4,6 @@ import FilterChipsComponent from '../components/FilterChips'
 import CommentsChipComponent from '../components/CommentsChip'
 import FilterChipComponent from '../components/FilterChip'
 import MultiBrandDashboard from '../components/MultiBrandDashboard'
-import ButtonComponent from '../components/ai/Button'
 
 const INITIAL_COMPONENTS: Component[] = [
   {
@@ -125,39 +124,7 @@ export default MultiBrandDashboard;`,
     updatedAt: new Date('2024-01-18'),
     component: MultiBrandDashboard
   },
-  {
-    id: 'button',
-    name: 'Button',
-    description: 'AI-generated red button component',
-    category: 'atoms',
-    tags: ['ai-generated', 'github', 'button'],
-    code: `import React from 'react';
 
-interface ButtonProps {
-  children: React.ReactNode;
-  className?: string;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}
-
-const Button: React.FC<ButtonProps> = ({
-  children,
-  className = '',
-  onClick,
-}) => {
-  const classes = \`bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded \${className}\`;
-
-  return (
-    <button className={classes} onClick={onClick}>
-      {children}
-    </button>
-  );
-};
-
-export default Button;`,
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-20'),
-    component: ButtonComponent
-  }
 ]
 
 export function useComponentRegistry() {

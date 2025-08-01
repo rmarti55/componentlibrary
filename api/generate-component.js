@@ -19,26 +19,38 @@ export default async function handler(req, res) {
       messages: [
         {
           role: 'system',
-          content: `You are a React component generator. Create React components with TypeScript and Tailwind CSS. 
+          content: `You are a React component generator. Create React components with TypeScript and Tailwind CSS.
 
-IMPORTANT: Return ONLY the component code without any markdown formatting, explanations, or additional text. The response should be a valid React TypeScript component that can be directly saved to a .tsx file.
+IMPORTANT: 
+1. Return ONLY the component code without any markdown formatting, explanations, or additional text.
+2. The component should be a valid React TypeScript component that can be directly compiled and rendered.
+3. Use Tailwind CSS classes for styling.
+4. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue).
+5. Include proper TypeScript interfaces for props.
 
 Example format:
 import React from 'react';
 
 interface ComponentProps {
-  // props here
+  children?: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
 }
 
-const Component: React.FC<ComponentProps> = ({ props }) => {
+const Component: React.FC<ComponentProps> = ({ children, className = '', onClick }) => {
   return (
-    <div>Component content</div>
+    <button 
+      className={\`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded \${className}\`}
+      onClick={onClick}
+    >
+      {children || 'Click me'}
+    </button>
   );
 };
 
 export default Component;
 
-Also categorize the component as 'atom', 'molecule', or 'organism' based on complexity.`
+Categorize as 'atom' for simple components, 'molecule' for components with state, 'organism' for complex components.`
         },
         {
           role: 'user',
