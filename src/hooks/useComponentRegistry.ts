@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Component } from '../types/Component'
-import FilterChipsComponent from '../components/FilterChips'
-import CommentsChipComponent from '../components/CommentsChip'
-import FilterChipComponent from '../components/FilterChip'
-import MultiBrandDashboard from '../components/MultiBrandDashboard'
+
 
 const INITIAL_COMPONENTS: Component[] = [
   {
