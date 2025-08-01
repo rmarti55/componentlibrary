@@ -119,6 +119,11 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
         <div className="h-full flex flex-col">
           <div className="flex flex-col gap-8 w-full">
             {variants.map((variant: any, idx: number) => {
+              // Debug logging
+              console.log('Variant:', variant)
+              console.log('Has code:', !!variant.code)
+              console.log('Has component:', !!variant.component)
+              
               // Special StarIcon logic for code preview
               let code = variant.code
               if (component.id === 'star-icon') {
@@ -135,8 +140,8 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                     <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
                   </span>
                 )
-              } else if (variant.code) {
-                // Prioritize AI-generated code over static components
+              } else if (variant.code && !variant.component) {
+                // Use dynamic renderer for AI-generated components (no static component)
                 preview = <DynamicComponentRenderer code={variant.code} props={variant.props || {}} />
               } else if (variant.component) {
                 const Comp = variant.component
