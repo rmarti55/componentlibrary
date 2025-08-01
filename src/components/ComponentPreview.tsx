@@ -135,6 +135,9 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                     <StarIcon filled={false} className="text-yellow-400 w-10 h-10" />
                   </span>
                 )
+              } else if (variant.code) {
+                // Prioritize AI-generated code over static components
+                preview = <DynamicComponentRenderer code={variant.code} props={variant.props || {}} />
               } else if (variant.component) {
                 const Comp = variant.component
                 // Pass default children for Button components
@@ -143,9 +146,6 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                   defaultProps.children = 'Click me'
                 }
                 preview = <Comp {...defaultProps} />
-              } else if (variant.code && !variant.component) {
-                // Use dynamic renderer for AI-generated components
-                preview = <DynamicComponentRenderer code={variant.code} props={variant.props || {}} />
               }
               return (
                 <div key={variant.name || idx} className="mb-8">

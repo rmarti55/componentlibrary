@@ -129,7 +129,7 @@ export function useComponentRegistry() {
   const [isLoading, setIsLoading] = useState(false)
   const [lastFetched, setLastFetched] = useState<Date | null>(null)
 
-  // Load components from localStorage on mount, but merge with initial components
+  // Load components from localStorage on mount
   useEffect(() => {
     const savedComponents = localStorage.getItem('mcp-visualizer-components')
     if (savedComponents) {
@@ -140,24 +140,15 @@ export function useComponentRegistry() {
           updatedAt: new Date(comp.updatedAt)
         }))
         
-        // Merge saved components with initial components, preserving React components
-        const mergedComponents = INITIAL_COMPONENTS.map(initialComp => {
-          const savedComp = parsed.find((p: any) => p.id === initialComp.id)
-          return savedComp ? { ...savedComp, component: initialComp.component } : initialComp
-        })
-        
-        // Add any new saved components that aren't in initial
-        const newSavedComponents = parsed.filter((p: any) => 
-          !INITIAL_COMPONENTS.find(initial => initial.id === p.id)
-        )
-        
-        setComponents([...mergedComponents, ...newSavedComponents])
+        // Only load components that don't have a component property (AI-generated only)
+        const aiComponents = parsed.filter((comp: any) => !comp.component)
+        setComponents(aiComponents)
       } catch (error) {
         console.error('Error loading components from localStorage:', error)
-        setComponents(INITIAL_COMPONENTS)
+        setComponents([])
       }
     } else {
-      setComponents(INITIAL_COMPONENTS)
+      setComponents([])
     }
   }, [])
 
