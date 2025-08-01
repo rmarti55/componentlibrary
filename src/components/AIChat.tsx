@@ -74,7 +74,7 @@ export default function AIChat() {
           id: sanitizedName.toLowerCase(),
           name: sanitizedName,
           description: 'AI-generated component',
-          category: data.category,
+          category: 'ai-generated',
           tags: ['ai-generated', 'github'],
           code: response,
           createdAt: new Date(),
