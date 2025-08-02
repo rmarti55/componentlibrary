@@ -1,4 +1,3 @@
-import React from 'react'
 import { COMPONENT_MAP, ComponentDefinition } from './TrustedComponentMap'
 
 interface DynamicComponentRendererProps {
