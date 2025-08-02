@@ -142,7 +142,17 @@ export function ComponentPreview({ component }: ComponentPreviewProps) {
                 )
               } else if (variant.code && !variant.component) {
                 // Use dynamic renderer for AI-generated components (no static component)
-                preview = <DynamicComponentRenderer code={variant.code} props={variant.props || {}} />
+                try {
+                  const definition = JSON.parse(variant.code)
+                  preview = <DynamicComponentRenderer definition={definition} />
+                } catch (error) {
+                  preview = (
+                    <div className="p-4 border border-red-300 bg-red-50 rounded-lg">
+                      <div className="text-red-800 font-medium mb-2">Invalid Component Definition</div>
+                      <div className="text-red-600 text-sm">Failed to parse component definition</div>
+                    </div>
+                  )
+                }
               } else if (variant.component) {
                 const Comp = variant.component
                 // Pass default children for Button components

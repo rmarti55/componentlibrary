@@ -19,36 +19,32 @@ export default async function handler(req, res) {
       messages: [
         {
           role: 'system',
-          content: `You are a React component generator. Create React components with TypeScript and Tailwind CSS.
+          content: `You are a component definition generator. Generate structured JSON definitions for components instead of raw code.
 
 IMPORTANT: 
-1. Return ONLY the component code without any markdown formatting, explanations, or additional text.
-2. The component should be a valid React TypeScript component that can be directly compiled and rendered.
-3. Use Tailwind CSS classes for styling.
+1. Return ONLY a JSON object with 'type' and 'props' fields.
+2. Use the available component types: Button, Card, Input, Text, Div, Span, Link
+3. Use Tailwind CSS classes for styling in the className prop.
 4. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue).
-5. Include proper TypeScript interfaces for props.
+5. Include appropriate children content.
 
 Example format:
-import React from 'react';
-
-interface ComponentProps {
-  children?: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
+{
+  "type": "Button",
+  "props": {
+    "className": "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded",
+    "children": "Click me"
+  }
 }
 
-const Component: React.FC<ComponentProps> = ({ children, className = '', onClick }) => {
-  return (
-    <button 
-      className={\`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded \${className}\`}
-      onClick={onClick}
-    >
-      {children || 'Click me'}
-    </button>
-  );
-};
-
-export default Component;
+Available component types:
+- Button: for buttons and interactive elements
+- Card: for container components with borders/shadows
+- Input: for form inputs and text fields
+- Text: for text content and paragraphs
+- Div: for generic containers
+- Span: for inline elements
+- Link: for anchor links
 
 Categorize as 'atom' for simple components, 'molecule' for components with state, 'organism' for complex components.`
         },
@@ -64,55 +60,42 @@ Categorize as 'atom' for simple components, 'molecule' for components with state
 
     const response = completion.choices[0]?.message?.content || ''
     
-    // Clean the response to remove markdown formatting
-    let cleanCode = response
-    
-    // Remove markdown code blocks
-    cleanCode = cleanCode.replace(/```typescript\s*/g, '')
-    cleanCode = cleanCode.replace(/```tsx\s*/g, '')
-    cleanCode = cleanCode.replace(/```jsx\s*/g, '')
-    cleanCode = cleanCode.replace(/```\s*/g, '')
-    
-    // Remove explanations and markdown text
-    const lines = cleanCode.split('\n')
-    const codeLines = []
-    let inCode = false
-    
-    for (const line of lines) {
-      // Skip lines that are clearly explanations
-      if (line.trim().startsWith('Here is') || 
-          line.trim().startsWith('You can use') ||
-          line.trim().startsWith('The category') ||
-          line.trim().startsWith('Example') ||
-          line.trim().startsWith('// Example') ||
-          line.trim().startsWith('// Usage') ||
-          line.trim().startsWith('// App.tsx')) {
-        continue
+    // Parse the JSON response
+    let componentDefinition
+    try {
+      // Clean the response to remove markdown formatting
+      let cleanResponse = response
+        .replace(/```json\s*/g, '')
+        .replace(/```\s*/g, '')
+        .trim()
+      
+      componentDefinition = JSON.parse(cleanResponse)
+      
+      // Validate the structure
+      if (!componentDefinition.type || !componentDefinition.props) {
+        throw new Error('Invalid component definition structure')
       }
       
-      // If we find import React, we're in the code
-      if (line.includes('import React') || line.includes('import {') || line.includes('interface') || line.includes('const ') || line.includes('export default')) {
-        inCode = true
-      }
-      
-      if (inCode) {
-        codeLines.push(line)
+    } catch (error) {
+      console.error('Failed to parse AI response:', error)
+      // Fallback to a simple button
+      componentDefinition = {
+        type: 'Button',
+        props: {
+          className: 'bg-gray-500 text-white px-4 py-2 rounded',
+          children: 'Generated Component'
+        }
       }
     }
     
-    cleanCode = codeLines.join('\n').trim()
-    
-    // Determine category based on component complexity
+    // Determine category based on component type
     let category = 'atom'
-    if (cleanCode.includes('useState') || cleanCode.includes('useEffect') || cleanCode.includes('useContext')) {
+    if (componentDefinition.type === 'Card' || componentDefinition.type === 'Div') {
       category = 'molecule'
-    }
-    if (cleanCode.includes('useState') && cleanCode.includes('useEffect') && cleanCode.length > 500) {
-      category = 'organism'
     }
 
     return res.status(200).json({ 
-      componentCode: cleanCode, 
+      componentCode: JSON.stringify(componentDefinition), 
       category: category 
     })
   } catch (error) {
