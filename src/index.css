@@ -24,10 +24,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Force font loading */
-  * {
-    font-family: 'Futura Std', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  }
+  /* Font loading - removed !important to prevent Tailwind conflicts */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -84,23 +81,9 @@
 }
 
 @layer components {
-  /* Force Futura font on all components */
-  .component-preview * {
-    font-family: 'Futura Std', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  }
-  
-  /* Additional font forcing for specific elements */
-  .component-preview div,
-  .component-preview p,
-  .component-preview button,
-  .component-preview span,
-  .component-preview h1,
-  .component-preview h2,
-  .component-preview h3,
-  .component-preview h4,
-  .component-preview h5,
-  .component-preview h6 {
-    font-family: 'Futura Std', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  /* Component preview font - using Tailwind utilities instead of !important */
+  .component-preview {
+    @apply font-sans;
   }
   
   .sidebar {
