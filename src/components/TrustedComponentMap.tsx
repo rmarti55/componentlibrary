@@ -48,7 +48,7 @@ type LinkProps = {
 export const COMPONENT_MAP = {
   Button: ({ className, children, ...rest }: ButtonProps) => (
     <button 
-      className={className || 'bg-gray-500 text-white px-4 py-2 rounded'}
+      className={className}
       {...rest}
     >
       {children || 'Button'}
@@ -57,7 +57,7 @@ export const COMPONENT_MAP = {
   
   Card: ({ className, children, ...rest }: CardProps) => (
     <div 
-      className={`bg-white border border-gray-200 rounded-lg shadow-sm p-4 ${className || ''}`}
+      className={className}
       {...rest}
     >
       {children}
@@ -66,13 +66,13 @@ export const COMPONENT_MAP = {
   
   Input: ({ className, ...rest }: InputProps) => (
     <input
-      className={`border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className || ''}`}
+      className={className}
       {...rest}
     />
   ),
   
   Text: ({ className, children, text, ...rest }: TextProps) => (
-    <p className={className || 'text-gray-900'} {...rest}>
+    <p className={className} {...rest}>
       {children || text}
     </p>
   ),
@@ -92,7 +92,7 @@ export const COMPONENT_MAP = {
   Link: ({ className, children, href, ...rest }: LinkProps) => (
     <a 
       href={href || '#'}
-      className={`text-blue-600 hover:text-blue-800 underline ${className || ''}`}
+      className={className}
       {...rest}
     >
       {children}
