@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DynamicComponentRenderer } from './DynamicComponentRenderer'
-import { ComponentDefinition, COMPONENT_MAP } from './TrustedComponentMap'
+import { ComponentDefinition } from './TrustedComponentMap'
 
 interface AIChatPreviewProps {
   code: string
