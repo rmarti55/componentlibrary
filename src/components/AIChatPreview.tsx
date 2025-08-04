@@ -14,11 +14,15 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
     props: string[]
     children: string
   } | null>(null)
+  const [rawResponse, setRawResponse] = useState<string>('')
 
   useEffect(() => {
     if (!code) return
 
     try {
+      // Store raw response for debugging
+      setRawResponse(code)
+      
       // Parse the JSON component definition
       const parsedDefinition: ComponentDefinition = JSON.parse(code)
       
@@ -67,6 +71,14 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
         <div><strong>Type:</strong> {componentInfo.type}</div>
         <div><strong>Props:</strong> {componentInfo.props.length > 0 ? componentInfo.props.join(', ') : 'None'}</div>
         <div><strong>Children:</strong> {componentInfo.children}</div>
+      </div>
+
+      {/* Debug: Raw AI response */}
+      <div className="mt-4 p-3 bg-gray-100 rounded">
+        <div className="text-xs font-semibold text-gray-700 mb-2">Raw AI Response:</div>
+        <pre className="text-xs text-gray-600 overflow-auto">
+          {rawResponse}
+        </pre>
       </div>
     </div>
   )

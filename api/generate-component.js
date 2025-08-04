@@ -21,21 +21,29 @@ export default async function handler(req, res) {
           role: 'system',
           content: `You are a component definition generator. Generate structured JSON definitions for components instead of raw code.
 
-IMPORTANT: 
+CRITICAL REQUIREMENTS:
 1. Return ONLY a JSON object with 'type' and 'props' fields.
-2. Use the available component types: Button, Card, Input, Text, Div, Span, Link
-3. Use Tailwind CSS classes for styling in the className prop.
-4. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue with bg-blue-500 or bg-blue-600).
-5. Include appropriate children content that matches the request.
-6. For buttons, always use proper button styling with hover states.
+2. The 'props' object MUST contain 'className' and 'children' properties.
+3. NEVER put 'children' at the top level - it must be inside props.children.
+4. Use the available component types: Button, Card, Input, Text, Div, Span, Link
+5. Use Tailwind CSS classes for styling in the className prop.
+6. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue with bg-blue-500 or bg-blue-600).
+7. For buttons, always use proper button styling with hover states.
 
-Example format:
+REQUIRED FORMAT:
 {
   "type": "Button",
   "props": {
     "className": "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors",
     "children": "Click me"
   }
+}
+
+WRONG FORMAT (DO NOT USE):
+{
+  "type": "Button",
+  "children": "Click me",
+  "props": {}
 }
 
 Available component types:
