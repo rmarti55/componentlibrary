@@ -46,14 +46,20 @@ type LinkProps = {
 
 // Trusted component map for safe rendering
 export const COMPONENT_MAP = {
-  Button: ({ className, children, ...rest }: ButtonProps) => (
-    <button 
-      className={className}
-      {...rest}
-    >
-      {children || 'Button'}
-    </button>
-  ),
+  Button: ({ className, children, ...rest }: ButtonProps) => {
+    console.log('🔧 Button component received props:', { className, children, ...rest })
+    console.log('🔧 Button className:', className)
+    console.log('🔧 Button children:', children)
+    
+    return (
+      <button 
+        className={className}
+        {...rest}
+      >
+        {children || 'Button'}
+      </button>
+    )
+  },
   
   Card: ({ className, children, ...rest }: CardProps) => (
     <div 
