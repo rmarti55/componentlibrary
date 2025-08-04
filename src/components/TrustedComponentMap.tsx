@@ -1,101 +1,49 @@
 import { ReactNode } from 'react'
 
 // Define prop types for components
-type ButtonProps = {
+type BasicProps = {
   className?: string;
   children?: ReactNode;
-  [key: string]: any;
-};
-
-type CardProps = {
-  className?: string;
-  children?: ReactNode;
-  [key: string]: any;
-};
-
-type InputProps = {
-  className?: string;
-  [key: string]: any;
-};
-
-type TextProps = {
-  className?: string;
-  children?: ReactNode;
-  text?: string;
-  [key: string]: any;
-};
-
-type DivProps = {
-  className?: string;
-  children?: ReactNode;
-  [key: string]: any;
-};
-
-type SpanProps = {
-  className?: string;
-  children?: ReactNode;
-  [key: string]: any;
-};
-
-type LinkProps = {
-  className?: string;
-  children?: ReactNode;
-  href?: string;
   [key: string]: any;
 };
 
 // Trusted component map for safe rendering
 export const COMPONENT_MAP = {
-  Button: ({ className, children, ...rest }: ButtonProps) => {
-    console.log('🔧 Button component received props:', { className, children, ...rest })
-    console.log('🔧 Button className:', className)
-    console.log('🔧 Button children:', children)
-    
-    return (
-      <button 
-        className={className}
-        {...rest}
-      >
-        {children || 'Button'}
-      </button>
-    )
-  },
+  Button: ({ className, children, ...rest }: BasicProps) => (
+    <button className={className} {...rest}>
+      {children}
+    </button>
+  ),
   
-  Card: ({ className, children, ...rest }: CardProps) => (
-    <div 
-      className={className}
-      {...rest}
-    >
+  Card: ({ className, children, ...rest }: BasicProps) => (
+    <div className={className} {...rest}>
       {children}
     </div>
   ),
   
-  Input: ({ className, ...rest }: InputProps) => (
-    <input
-      className={className}
-      {...rest}
-    />
+  Input: ({ className, ...rest }: BasicProps) => (
+    <input className={className} {...rest} />
   ),
   
-  Text: ({ className, children, text, ...rest }: TextProps) => (
+  Text: ({ className, children, text, ...rest }: BasicProps) => (
     <p className={className} {...rest}>
       {children || text}
     </p>
   ),
   
-  Div: ({ className, children, ...rest }: DivProps) => (
-    <div className={className || ''} {...rest}>
+  Div: ({ className, children, ...rest }: BasicProps) => (
+    <div className={className} {...rest}>
       {children}
     </div>
   ),
   
-  Span: ({ className, children, ...rest }: SpanProps) => (
-    <span className={className || ''} {...rest}>
+  Span: ({ className, children, ...rest }: BasicProps) => (
+    <span className={className} {...rest}>
       {children}
     </span>
   ),
   
-  Link: ({ className, children, href, ...rest }: LinkProps) => (
+  Link: ({ className, children, href, ...rest }: BasicProps) => (
     <a 
       href={href || '#'}
       className={className}
