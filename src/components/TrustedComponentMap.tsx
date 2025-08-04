@@ -2,59 +2,56 @@
 
 // Trusted component map for safe rendering
 export const COMPONENT_MAP = {
-  Button: (props: any) => (
+  Button: ({ className, children, ...rest }) => (
     <button 
-      className={props.className || 'bg-gray-500 text-white px-4 py-2 rounded'}
-      onClick={props.onClick}
-      disabled={props.disabled}
-      type={props.type || 'button'}
+      className={className || 'bg-gray-500 text-white px-4 py-2 rounded'}
+      {...rest}
     >
-      {props.children || 'Button'}
+      {children || 'Button'}
     </button>
   ),
   
-  Card: (props: any) => (
+  Card: ({ className, children, ...rest }) => (
     <div 
-      className={`bg-white border border-gray-200 rounded-lg shadow-sm p-4 ${props.className || ''}`}
+      className={`bg-white border border-gray-200 rounded-lg shadow-sm p-4 ${className || ''}`}
+      {...rest}
     >
-      {props.children}
+      {children}
     </div>
   ),
   
-  Input: (props: any) => (
+  Input: ({ className, ...rest }) => (
     <input
-      type={props.type || 'text'}
-      placeholder={props.placeholder}
-      className={`border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${props.className || ''}`}
-      value={props.value}
-      onChange={props.onChange}
+      className={`border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className || ''}`}
+      {...rest}
     />
   ),
   
-  Text: (props: any) => (
-    <p className={props.className || 'text-gray-900'}>
-      {props.children || props.text}
+  Text: ({ className, children, text, ...rest }) => (
+    <p className={className || 'text-gray-900'} {...rest}>
+      {children || text}
     </p>
   ),
   
-  Div: (props: any) => (
-    <div className={props.className || ''}>
-      {props.children}
+  Div: ({ className, children, ...rest }) => (
+    <div className={className || ''} {...rest}>
+      {children}
     </div>
   ),
   
-  Span: (props: any) => (
-    <span className={props.className || ''}>
-      {props.children}
+  Span: ({ className, children, ...rest }) => (
+    <span className={className || ''} {...rest}>
+      {children}
     </span>
   ),
   
-  Link: (props: any) => (
+  Link: ({ className, children, href, ...rest }) => (
     <a 
-      href={props.href || '#'}
-      className={`text-blue-600 hover:text-blue-800 underline ${props.className || ''}`}
+      href={href || '#'}
+      className={`text-blue-600 hover:text-blue-800 underline ${className || ''}`}
+      {...rest}
     >
-      {props.children}
+      {children}
     </a>
   )
 }
