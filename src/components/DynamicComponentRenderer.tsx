@@ -7,7 +7,7 @@ interface DynamicComponentRendererProps {
 // Normalize component definition to handle malformed AI responses
 const normalizeDefinition = (def: any): ComponentDefinition => {
   // Start with existing props, don't create a new empty object
-  const props = { ...def.props } || {}
+  const props = { ...(def.props || {}) }
   
   // If children exists at top level but not in props, move it to props
   if (def.children && !props.children) {
