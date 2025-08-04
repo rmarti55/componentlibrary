@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { DynamicComponentRenderer } from './DynamicComponentRenderer'
 
 interface AIChatPreviewProps {
   code: string
@@ -14,12 +15,12 @@ interface ComponentDefinition {
 }
 
 export function AIChatPreview({ code }: AIChatPreviewProps) {
+  const [componentDefinition, setComponentDefinition] = useState<ComponentDefinition | null>(null)
   const [componentInfo, setComponentInfo] = useState<{
     name: string
     type: string
     props: string[]
     children: string
-    className?: string
   } | null>(null)
 
   useEffect(() => {
@@ -27,31 +28,31 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
 
     try {
       // Parse the JSON component definition
-      const componentDefinition: ComponentDefinition = JSON.parse(code)
+      const parsedDefinition: ComponentDefinition = JSON.parse(code)
       
       // Extract component info from the JSON structure
-      const componentType = componentDefinition.type || 'div'
-      const props = componentDefinition.props || {}
-      const className = props.className || ''
+      const componentType = parsedDefinition.type || 'div'
+      const props = parsedDefinition.props || {}
       const children = props.children || 'No children'
       
       // Extract prop names (excluding className and children)
       const propNames = Object.keys(props).filter(key => key !== 'className' && key !== 'children')
 
+      setComponentDefinition(parsedDefinition)
       setComponentInfo({
         name: componentType,
         type: componentType.toLowerCase(),
         props: propNames,
-        children: children,
-        className: className
+        children: children
       })
     } catch (err) {
       console.error('Failed to parse component definition:', err)
+      setComponentDefinition(null)
       setComponentInfo(null)
     }
   }, [code])
 
-  if (!componentInfo) {
+  if (!componentInfo || !componentDefinition) {
     return <div className="text-gray-500">Analyzing component...</div>
   }
 
@@ -64,11 +65,9 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
         </div>
       </div>
 
-      {/* Visual representation */}
+      {/* Visual representation using DynamicComponentRenderer */}
       <div className="flex justify-center">
-        <div className={`${componentInfo.className || 'border p-4'} text-center`}>
-          {componentInfo.children}
-        </div>
+        <DynamicComponentRenderer definition={componentDefinition} />
       </div>
 
       {/* Component info */}
