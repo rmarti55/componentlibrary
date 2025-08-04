@@ -25,20 +25,21 @@ IMPORTANT:
 1. Return ONLY a JSON object with 'type' and 'props' fields.
 2. Use the available component types: Button, Card, Input, Text, Div, Span, Link
 3. Use Tailwind CSS classes for styling in the className prop.
-4. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue).
-5. Include appropriate children content.
+4. Make the component match the user's request exactly (e.g., if they ask for a blue button, make it blue with bg-blue-500 or bg-blue-600).
+5. Include appropriate children content that matches the request.
+6. For buttons, always use proper button styling with hover states.
 
 Example format:
 {
   "type": "Button",
   "props": {
-    "className": "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded",
+    "className": "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors",
     "children": "Click me"
   }
 }
 
 Available component types:
-- Button: for buttons and interactive elements
+- Button: for buttons and interactive elements (use proper button styling)
 - Card: for container components with borders/shadows
 - Input: for form inputs and text fields
 - Text: for text content and paragraphs
@@ -78,12 +79,12 @@ Categorize as 'atom' for simple components, 'molecule' for components with state
       
     } catch (error) {
       console.error('Failed to parse AI response:', error)
-      // Fallback to a simple button
+      // Fallback to a proper blue button
       componentDefinition = {
         type: 'Button',
         props: {
-          className: 'bg-gray-500 text-white px-4 py-2 rounded',
-          children: 'Generated Component'
+          className: 'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors',
+          children: 'Click me'
         }
       }
     }

@@ -4,49 +4,49 @@ interface AIChatPreviewProps {
   code: string
 }
 
+interface ComponentDefinition {
+  type: string
+  props: {
+    className?: string
+    children?: string
+    [key: string]: any
+  }
+}
+
 export function AIChatPreview({ code }: AIChatPreviewProps) {
   const [componentInfo, setComponentInfo] = useState<{
     name: string
     type: string
     props: string[]
     children: string
+    className?: string
   } | null>(null)
 
   useEffect(() => {
     if (!code) return
 
     try {
-      // Extract component name
-      const nameMatch = code.match(/const\s+(\w+)|export\s+default\s+(\w+)/)
-      const componentName = nameMatch?.[1] || nameMatch?.[2] || 'Component'
-
-      // Extract component type (button, div, etc.)
-      const typeMatch = code.match(/<(\w+)/)
-      const componentType = typeMatch?.[1] || 'div'
+      // Parse the JSON component definition
+      const componentDefinition: ComponentDefinition = JSON.parse(code)
       
-      // Check if it's a button component by looking for button-related patterns
-      const isButton = code.includes('<button') || code.includes('button') || componentName.toLowerCase().includes('button')
-
-      // Extract props
-      const propsMatch = code.match(/interface\s+\w+Props\s*{([^}]*)}/)
-      const propsText = propsMatch?.[1] || ''
-      const props = propsText.split('\n')
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith('//'))
-        .map(line => line.replace(/[?:;].*$/, '').trim())
-        .filter(Boolean)
-
-      // Extract children content
-      const childrenMatch = code.match(/\{children\}/)
-      const hasChildren = !!childrenMatch
+      // Extract component info from the JSON structure
+      const componentType = componentDefinition.type || 'div'
+      const props = componentDefinition.props || {}
+      const className = props.className || ''
+      const children = props.children || 'No children'
+      
+      // Extract prop names (excluding className and children)
+      const propNames = Object.keys(props).filter(key => key !== 'className' && key !== 'children')
 
       setComponentInfo({
-        name: componentName,
-        type: isButton ? 'button' : componentType,
-        props: props,
-        children: hasChildren ? 'Dynamic content' : 'No children'
+        name: componentType,
+        type: componentType.toLowerCase(),
+        props: propNames,
+        children: children,
+        className: className
       })
     } catch (err) {
+      console.error('Failed to parse component definition:', err)
       setComponentInfo(null)
     }
   }, [code])
@@ -66,7 +66,7 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
 
       {/* Visual representation */}
       <div className="flex justify-center">
-        <div className={`${componentInfo.type === 'button' ? 'bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors' : 'border p-4'} text-center`}>
+        <div className={`${componentInfo.className || 'border p-4'} text-center`}>
           {componentInfo.children}
         </div>
       </div>
