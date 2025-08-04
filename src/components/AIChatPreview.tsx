@@ -23,8 +23,12 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
       // Store raw response for debugging
       setRawResponse(code)
       
-      // Parse the JSON component definition
-      const parsedDefinition: ComponentDefinition = JSON.parse(code)
+      // Parse the JSON component definition and ensure proper typing
+      const rawDefinition = JSON.parse(code)
+      const parsedDefinition: ComponentDefinition = {
+        type: rawDefinition.type as keyof typeof COMPONENT_MAP,
+        props: rawDefinition.props || {}
+      }
       
       // Extract component info from the JSON structure
       const componentType = parsedDefinition.type || 'div'
