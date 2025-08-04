@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DynamicComponentRenderer } from './DynamicComponentRenderer'
-import { ComponentDefinition } from './TrustedComponentMap'
+import { ComponentDefinition, COMPONENT_MAP } from './TrustedComponentMap'
 
 interface AIChatPreviewProps {
   code: string
@@ -26,7 +26,7 @@ export function AIChatPreview({ code }: AIChatPreviewProps) {
       // Parse the JSON component definition and ensure proper typing
       const rawDefinition = JSON.parse(code)
       const parsedDefinition: ComponentDefinition = {
-        type: rawDefinition.type as keyof typeof COMPONENT_MAP,
+        type: rawDefinition.type as "Button" | "Card" | "Input" | "Text" | "Div" | "Span" | "Link",
         props: rawDefinition.props || {}
       }
       
